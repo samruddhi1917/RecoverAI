@@ -19,7 +19,7 @@ previous_failed = np.random.randint(0, 8, NUM_CUSTOMERS)
 print(previous_failed[:10])
 
 lifetime_value = np.round(
-    np.random.uniform(500, 100000, NUM_CUSTOMERS),
+    np.random.uniform(500.01, 99999.99, NUM_CUSTOMERS),
     2
 )
 
@@ -34,6 +34,12 @@ customers = pd.DataFrame({
 
 print(customers.head())
 
+customer_subscription = np.random.choice(
+    [0, 1],
+    NUM_CUSTOMERS,
+    p=[0.30, 0.70]
+)
+
 NUM_TRANSACTIONS = 10000
 
 transaction_ids = [
@@ -46,11 +52,22 @@ transaction_customer_ids = np.random.choice(
     NUM_TRANSACTIONS
 )
 
+customer_subscription_map = dict(
+    zip(customer_ids, customer_subscription)
+)
+
+subscription_active = np.array([
+    customer_subscription_map[customer_id]
+    for customer_id in transaction_customer_ids
+])
+
+print(subscription_active[:10])
+
 print(transaction_ids[:10])
 print(transaction_customer_ids[:10])
 
 transaction_amounts = np.round(
-    np.random.uniform(500, 100000, NUM_TRANSACTIONS),
+    np.random.uniform(500.01, 99999.99, NUM_TRANSACTIONS),
     2
 )
 
@@ -191,14 +208,6 @@ transaction_hour = np.random.randint(
 
 print(transaction_hour[:10])
 
-subscription_active = np.random.choice(
-    [0, 1],
-    NUM_TRANSACTIONS,
-    p=[0.30, 0.70]
-)
-
-print(subscription_active[:10])
-
 # ==========================================
 # RECOVERY SCORE
 # ==========================================
@@ -206,6 +215,11 @@ print(subscription_active[:10])
 recovery_score = np.zeros(NUM_TRANSACTIONS)
 
 failed_indices = np.where(failed_mask)[0]
+
+customer_index_map = {
+    customer_id: index
+    for index, customer_id in enumerate(customer_ids)
+}
 
 for i in failed_indices:
 
@@ -244,9 +258,9 @@ for i in failed_indices:
     # 2. Customer history
     # --------------------------------------
 
-    customer_index = customer_ids.index(
+    customer_index = customer_index_map[
         transaction_customer_ids[i]
-    )
+    ]
 
     successful_history = previous_successful[customer_index]
     failed_history = previous_failed[customer_index]
@@ -501,6 +515,66 @@ print(
 print(
     "Negative retry counts:",
     (transactions["retry_count"] < 0).sum()
+)
+
+subscription_consistency = (
+    transactions
+    .groupby("customer_id")["subscription_active"]
+    .nunique()
+)
+
+print(
+    "Customers with inconsistent subscription status:",
+    (subscription_consistency > 1).sum()
+)
+
+#10. Invalid transaction amounts
+print(
+    "Invalid transaction amounts:",
+    (
+        (transactions["amount"] <= 500) |
+        (transactions["amount"] >= 100000)
+    ).sum()
+)
+
+#11. Invalid lifetime values
+
+print(
+    "Invalid lifetime values:",
+    (
+        (transactions["customer_lifetime_value"] <= 500) |
+        (transactions["customer_lifetime_value"] >= 100000)
+    ).sum()
+)
+
+#12. Successful transactions with expected recovery
+
+print(
+    "Successful transactions with expected recovery:",
+    (
+        (transactions["transaction_status"] == "SUCCESS") &
+        (transactions["expected_recovery"] != 0)
+    ).sum()
+)
+
+#13. Successful transactions with retries
+
+print(
+    "Successful transactions with retries:",
+    (
+        (transactions["transaction_status"] == "SUCCESS") &
+        (transactions["retry_count"] != 0)
+    ).sum()
+)
+
+#14. Failed transactions with zero retries but retry timestamp
+print(
+    "Failed transactions with zero retries but retry timestamp:",
+    (
+        (transactions["transaction_status"] == "FAILED") &
+        (transactions["retry_count"] == 0) &
+        (transactions["last_retry_hours_ago"].notna())
+    ).sum()
 )
 
 print("\n========== CHECK COMPLETE ==========")
