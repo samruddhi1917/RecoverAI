@@ -6,140 +6,188 @@ model = joblib.load("recoverai_model.pkl")
 
 print("RecoverAI model loaded successfully!")
 
+print("\n========== RECOVERAI PREDICTION ==========")
 
-# Function to make prediction
-def predict_recovery(case_name, transaction):
+# Get transaction details from user
+amount = float(input("Transaction amount (Rs.): "))
 
-    probability = model.predict_proba(transaction)[0][1]
+payment_method = input(
+    "Payment method (UPI/CARD/NETBANKING/WALLET): "
+).upper()
 
-    amount = transaction["amount"].iloc[0]
+merchant_category = input(
+    "Merchant category (ELECTRONICS/CLOTHING/GROCERIES/FOOD/TRAVEL/HOME_APPLIANCES): "
+).upper()
 
-    expected_recovery = amount * probability
+failure_category = input(
+    "Failure category (TEMPORARY/CUSTOMER_ACTION/PAYMENT_METHOD/SYSTEM): "
+).upper()
 
-    if probability >= 0.70:
-        recommendation = "HIGH PRIORITY RETRY"
-    elif probability >= 0.40:
-        recommendation = "RETRY WITH CAUTION"
-    else:
-        recommendation = "LOW PRIORITY RETRY"
+failure_reason = input(
+    "Failure reason (NETWORK_TIMEOUT/INSUFFICIENT_FUNDS/"
+    "AUTHENTICATION_REQUIRED/EXPIRED_CARD/PROCESSING_ERROR/"
+    "TEMPORARY_SERVICE_ERROR): "
+).upper()
 
-    print("\n========================================")
-    print(case_name)
-    print("========================================")
+retry_count = int(input("Retry count: "))
 
-    print(f"Transaction Amount: Rs. {amount:.2f}")
-    print(f"Recovery Probability: {probability:.2%}")
-    print(f"Expected Recovery: Rs. {expected_recovery:.2f}")
-    print(f"Recommendation: {recommendation}")
+last_retry_hours_ago = float(
+    input("Hours since last retry (enter 0 if never retried): ")
+)
+
+device_type = input(
+    "Device type (PHONE/DESKTOP): "
+).upper()
+
+region = input("Region/state: ").upper()
+
+transaction_hour = int(
+    input("Transaction hour (0-23): ")
+)
+
+subscription_active = int(
+    input("Is subscription active? (1 = Yes, 0 = No): ")
+)
+
+previous_successful_payments = int(
+    input("Previous successful payments: ")
+)
+
+previous_failed_payments = int(
+    input("Previous failed payments: ")
+)
+
+customer_lifetime_value = float(
+    input("Customer lifetime value (Rs.): ")
+)
 
 
-# ==================================================
-# CASE A - HIGH POTENTIAL
-# ==================================================
+# ==============================
+# ENGINEERED FEATURES
+# ==============================
 
-case_a = pd.DataFrame([{
-    "amount": 5000,
-    "payment_method": "UPI",
-    "merchant_category": "ELECTRONICS",
-    "failure_category": "TEMPORARY",
-    "failure_reason": "NETWORK_TIMEOUT",
-    "retry_count": 0,
-    "last_retry_hours_ago": None,
-    "device_type": "PHONE",
-    "region": "MAHARASHTRA",
-    "transaction_hour": 10,
-    "subscription_active": 1,
-    "previous_successful_payments": 18,
-    "previous_failed_payments": 1,
-    "customer_lifetime_value": 50000,
-    "customer_success_rate": 18 / 19,
-    "has_been_retried": 0,
-    "amount_to_lifetime_value_ratio": 5000 / 50000,
-    "has_retry_timestamp": 0
+total_previous_payments = (
+    previous_successful_payments
+    + previous_failed_payments
+)
+
+customer_success_rate = (
+    previous_successful_payments
+    / total_previous_payments
+    if total_previous_payments > 0
+    else 0
+)
+
+has_been_retried = int(retry_count > 0)
+
+amount_to_lifetime_value_ratio = (
+    amount / customer_lifetime_value
+    if customer_lifetime_value > 0
+    else 0
+)
+
+has_retry_timestamp = int(retry_count > 0)
+
+if retry_count == 0:
+    last_retry_hours_ago = None
+
+
+# ==============================
+# CREATE TRANSACTION
+# ==============================
+
+transaction = pd.DataFrame([{
+
+    "amount": amount,
+
+    "payment_method": payment_method,
+
+    "merchant_category": merchant_category,
+
+    "failure_category": failure_category,
+
+    "failure_reason": failure_reason,
+
+    "retry_count": retry_count,
+
+    "last_retry_hours_ago": last_retry_hours_ago,
+
+    "device_type": device_type,
+
+    "region": region,
+
+    "transaction_hour": transaction_hour,
+
+    "subscription_active": subscription_active,
+
+    "previous_successful_payments":
+        previous_successful_payments,
+
+    "previous_failed_payments":
+        previous_failed_payments,
+
+    "customer_lifetime_value":
+        customer_lifetime_value,
+
+    "customer_success_rate":
+        customer_success_rate,
+
+    "has_been_retried":
+        has_been_retried,
+
+    "amount_to_lifetime_value_ratio":
+        amount_to_lifetime_value_ratio,
+
+    "has_retry_timestamp":
+        has_retry_timestamp
+
 }])
 
-predict_recovery("CASE A - HIGH POTENTIAL", case_a)
+
+# ==============================
+# MODEL PREDICTION
+# ==============================
+
+probability = model.predict_proba(transaction)[0][1]
+
+expected_recovery = amount * probability
 
 
-# ==================================================
-# CASE B - LOW POTENTIAL
-# ==================================================
+# ==============================
+# RECOMMENDATION
+# ==============================
 
-case_b = pd.DataFrame([{
-    "amount": 5000,
-    "payment_method": "CARD",
-    "merchant_category": "ELECTRONICS",
-    "failure_category": "CUSTOMER_ACTION",
-    "failure_reason": "INSUFFICIENT_FUNDS",
-    "retry_count": 5,
-    "last_retry_hours_ago": 1,
-    "device_type": "PHONE",
-    "region": "MAHARASHTRA",
-    "transaction_hour": 10,
-    "subscription_active": 1,
-    "previous_successful_payments": 2,
-    "previous_failed_payments": 7,
-    "customer_lifetime_value": 30000,
-    "customer_success_rate": 2 / 9,
-    "has_been_retried": 1,
-    "amount_to_lifetime_value_ratio": 5000 / 30000,
-    "has_retry_timestamp": 1
-}])
+if probability >= 0.70:
 
-predict_recovery("CASE B - LOW POTENTIAL", case_b)
+    recommendation = "HIGH PRIORITY RETRY"
+
+elif probability >= 0.40:
+
+    recommendation = "RETRY WITH CAUTION"
+
+else:
+
+    recommendation = "LOW PRIORITY RETRY"
 
 
-# ==================================================
-# CASE C - FIRST RETRY
-# ==================================================
+# ==============================
+# DISPLAY RESULT
+# ==============================
 
-case_c = pd.DataFrame([{
-    "amount": 2000,
-    "payment_method": "UPI",
-    "merchant_category": "CLOTHING",
-    "failure_category": "TEMPORARY",
-    "failure_reason": "TEMPORARY_SERVICE_ERROR",
-    "retry_count": 0,
-    "last_retry_hours_ago": None,
-    "device_type": "PHONE",
-    "region": "MAHARASHTRA",
-    "transaction_hour": 14,
-    "subscription_active": 1,
-    "previous_successful_payments": 10,
-    "previous_failed_payments": 0,
-    "customer_lifetime_value": 25000,
-    "customer_success_rate": 1.0,
-    "has_been_retried": 0,
-    "amount_to_lifetime_value_ratio": 2000 / 25000,
-    "has_retry_timestamp": 0
-}])
+print("\n========================================")
 
-predict_recovery("CASE C - FIRST RETRY", case_c)
+print(f"Transaction Amount: Rs. {amount:.2f}")
 
+print(
+    f"Recovery Probability: {probability:.2%}"
+)
 
-# ==================================================
-# CASE D - NETWORK FAILURE
-# ==================================================
+print(
+    f"Expected Recovery: Rs. {expected_recovery:.2f}"
+)
 
-case_d = pd.DataFrame([{
-    "amount": 3000,
-    "payment_method": "NETBANKING",
-    "merchant_category": "HOME_APPLIANCES",
-    "failure_category": "TEMPORARY",
-    "failure_reason": "NETWORK_TIMEOUT",
-    "retry_count": 1,
-    "last_retry_hours_ago": 2,
-    "device_type": "DESKTOP",
-    "region": "MAHARASHTRA",
-    "transaction_hour": 18,
-    "subscription_active": 1,
-    "previous_successful_payments": 12,
-    "previous_failed_payments": 2,
-    "customer_lifetime_value": 40000,
-    "customer_success_rate": 12 / 14,
-    "has_been_retried": 1,
-    "amount_to_lifetime_value_ratio": 3000 / 40000,
-    "has_retry_timestamp": 1
-}])
+print(
+    f"Recommendation: {recommendation}"
+)
 
-predict_recovery("CASE D - NETWORK FAILURE", case_d)
+print("========================================")
