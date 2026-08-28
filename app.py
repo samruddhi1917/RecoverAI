@@ -477,6 +477,8 @@ st.write(
 for reason in reasons[:5]:
     st.markdown(f"✅ {reason}")
 
+
+
     # --------------------------------------------------------
     # PROBABILITY BAR
     # --------------------------------------------------------
@@ -485,6 +487,32 @@ for reason in reasons[:5]:
 
     st.progress(
         float(recovery_probability)
+    )
+
+    # --------------------------------------------------------
+# EXPECTED RECOVERY
+# --------------------------------------------------------
+
+st.subheader("Expected Revenue Recovery")
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.metric(
+        "Transaction Value",
+        f"₹{amount:,.2f}"
+    )
+
+with col2:
+    st.metric(
+        "Recovery Probability",
+        f"{recovery_probability:.1%}"
+    )
+
+with col3:
+    st.metric(
+        "Expected Recovery",
+        f"₹{expected_recovery:,.2f}"
     )
 
 
