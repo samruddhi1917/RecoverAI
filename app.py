@@ -519,6 +519,8 @@ if st.button(
                 ]
             })
         
-        st.dataframe(display_transaction, width="stretch")
+        display_transaction["Value"] = display_transaction["Value"].astype(str)
+
+        st.dataframe(display_transaction, hide_index=True, width="stretch")
 
     
