@@ -519,6 +519,6 @@ if st.button(
                 ]
             })
         
-            st.dataframe(display_transaction, width="stretch")
+        st.dataframe(display_transaction, width="stretch")
 
     
