@@ -485,42 +485,45 @@ if st.button(
     # TRANSACTION SUMMARY
     # ========================================================
 
-    with st.expander("Transaction Details"):
-        display_transaction = pd.DataFrame({
-                "Field": [
-                    "Transaction Amount",
-                    "Payment Method",
-                    "Merchant Category",
-                    "Failure Category",
-                    "Failure Reason",
-                    "Retry Count",
-                    "Device Type",
-                    "Region",
-                    "Transaction Hour",
-                    "Subscription Active",
-                    "Previous Successful Payments",
-                    "Previous Failed Payments",
-                    "Customer Lifetime Value"
-                ],
-                "Value": [
-                    amount,
-                    payment_method,
-                    merchant_category,
-                    failure_category,
-                    failure_reason,
-                    retry_count,
-                    device_type,
-                    region,
-                    transaction_hour,
-                    "Yes" if subscription_active == 1 else "No",
-                    previous_successful_payments,
-                    previous_failed_payments,
-                    customer_lifetime_value
-                ]
-            })
-        
-        display_transaction["Value"] = display_transaction["Value"].astype(str)
+with st.expander("Transaction Details"):
 
-        st.dataframe(display_transaction, hide_index=True, width="stretch")
+    display_transaction = pd.DataFrame({
+        "Field": [
+            "Transaction Amount",
+            "Payment Method",
+            "Merchant Category",
+            "Failure Category",
+            "Failure Reason",
+            "Retry Count",
+            "Device Type",
+            "Region",
+            "Transaction Hour",
+            "Subscription Active",
+            "Previous Successful Payments",
+            "Previous Failed Payments",
+            "Customer Lifetime Value"
+        ],
+        "Value": [
+            f"Rs. {amount:,.2f}",
+            str(payment_method),
+            str(merchant_category),
+            str(failure_category),
+            str(failure_reason),
+            str(retry_count),
+            str(device_type),
+            str(region),
+            str(transaction_hour),
+            "Yes" if subscription_active == 1 else "No",
+            str(previous_successful_payments),
+            str(previous_failed_payments),
+            f"Rs. {customer_lifetime_value:,.2f}"
+        ]
+    })
+
+    st.dataframe(
+        display_transaction,
+        width="stretch",
+        hide_index=True
+    )
 
     
