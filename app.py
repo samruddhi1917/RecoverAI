@@ -487,9 +487,13 @@ if st.button(
 
     with st.expander("🔍 View Transaction Features"):
 
-        st.dataframe(
-            transaction.T.rename(
-                columns={0: "Value"}
-            ),
-            use_container_width=True
-        )
+    display_transaction = pd.DataFrame({
+        "Feature": transaction.columns,
+        "Value": transaction.iloc[0].astype(str).values
+    })
+
+    st.dataframe(
+        display_transaction,
+        width="stretch",
+        hide_index=True
+    )
