@@ -465,6 +465,17 @@ if len(reasons) == 0:
             priority
         )
 
+st.markdown("---")
+
+st.subheader("🤖 Why RecoverAI Made This Decision")
+
+st.write(
+    "RecoverAI analyzed the transaction, failure characteristics, "
+    "retry history and customer payment behavior."
+)
+
+for reason in reasons[:5]:
+    st.markdown(f"✅ {reason}")
 
     # --------------------------------------------------------
     # PROBABILITY BAR
