@@ -485,15 +485,40 @@ if st.button(
     # TRANSACTION SUMMARY
     # ========================================================
 
-    with st.expander("🔍 View Transaction Features"):
+    with st.expander("Transaction Details"):
+        display_transaction = pd.DataFrame({
+                "Field": [
+                    "Transaction Amount",
+                    "Payment Method",
+                    "Merchant Category",
+                    "Failure Category",
+                    "Failure Reason",
+                    "Retry Count",
+                    "Device Type",
+                    "Region",
+                    "Transaction Hour",
+                    "Subscription Active",
+                    "Previous Successful Payments",
+                    "Previous Failed Payments",
+                    "Customer Lifetime Value"
+                ],
+                "Value": [
+                    amount,
+                    payment_method,
+                    merchant_category,
+                    failure_category,
+                    failure_reason,
+                    retry_count,
+                    device_type,
+                    region,
+                    transaction_hour,
+                    "Yes" if subscription_active == 1 else "No",
+                    previous_successful_payments,
+                    previous_failed_payments,
+                    customer_lifetime_value
+                ]
+            })
+        
+            st.dataframe(display_transaction, width="stretch")
 
-    display_transaction = pd.DataFrame({
-        "Feature": transaction.columns,
-        "Value": transaction.iloc[0].astype(str).values
-    })
-
-    st.dataframe(
-        display_transaction,
-        width="stretch",
-        hide_index=True
-    )
+    
