@@ -1,14 +1,21 @@
 import pandas as pd
 import joblib
 
-# Load trained model
+# ==============================
+# LOAD TRAINED MODEL
+# ==============================
+
 model = joblib.load("recoverai_model.pkl")
 
 print("RecoverAI model loaded successfully!")
 
 print("\n========== RECOVERAI PREDICTION ==========")
 
-# Get transaction details from user
+
+# ==============================
+# GET TRANSACTION DETAILS
+# ==============================
+
 amount = float(input("Transaction amount (Rs.): "))
 
 payment_method = input(
@@ -16,15 +23,18 @@ payment_method = input(
 ).upper()
 
 merchant_category = input(
-    "Merchant category (ELECTRONICS/CLOTHING/GROCERIES/FOOD/TRAVEL/HOME_APPLIANCES): "
+    "Merchant category "
+    "(ELECTRONICS/CLOTHING/GROCERIES/FOOD/TRAVEL/HOME_APPLIANCES): "
 ).upper()
 
 failure_category = input(
-    "Failure category (TEMPORARY/CUSTOMER_ACTION/PAYMENT_METHOD/SYSTEM): "
+    "Failure category "
+    "(TEMPORARY/CUSTOMER_ACTION/PAYMENT_METHOD/SYSTEM): "
 ).upper()
 
 failure_reason = input(
-    "Failure reason (NETWORK_TIMEOUT/INSUFFICIENT_FUNDS/"
+    "Failure reason "
+    "(NETWORK_TIMEOUT/INSUFFICIENT_FUNDS/"
     "AUTHENTICATION_REQUIRED/EXPIRED_CARD/PROCESSING_ERROR/"
     "TEMPORARY_SERVICE_ERROR): "
 ).upper()
@@ -148,57 +158,64 @@ transaction = pd.DataFrame([{
 # MODEL PREDICTION
 # ==============================
 
-probability = model.predict_proba(transaction)[0][1]
+recovery_probability = model.predict_proba(
+    transaction
+)[0][1]
 
-expected_recovery = amount * probability
+expected_recovery = (
+    amount * recovery_probability
+)
 
 
-# ========================================
+# ==============================
 # RECOVERAI DECISION ENGINE
-# ========================================
+# ==============================
 
 if recovery_probability >= 0.75:
+
     recommendation = "HIGH PRIORITY RETRY"
     priority = "HIGH"
 
 elif recovery_probability >= 0.50:
+
     recommendation = "RETRY WITH CAUTION"
     priority = "MEDIUM"
 
 elif recovery_probability >= 0.25:
+
     recommendation = "LOW PRIORITY RETRY"
     priority = "LOW"
 
 else:
+
     recommendation = "DO NOT RETRY"
     priority = "VERY LOW"
+
+
+# ==============================
+# FINAL RESULT
+# ==============================
 
 print("\n========================================")
 print("        RECOVERAI DECISION")
 print("========================================")
 
-print(f"Transaction Amount: Rs. {amount:.2f}")
-print(f"Recovery Probability: {recovery_probability * 100:.2f}%")
-print(f"Expected Recovery: Rs. {expected_recovery:.2f}")
-print(f"Retry Priority: {priority}")
-print(f"Recommendation: {recommendation}")
-
-print("========================================")
-
-# ==============================
-# DISPLAY RESULT
-# ==============================
-
-print("\n========================================")
-
-print(f"Transaction Amount: Rs. {amount:.2f}")
-
 print(
-    f"Recovery Probability: {probability:.2%}"
+    f"Transaction Amount: Rs. {amount:.2f}"
 )
 
 print(
-    f"Expected Recovery: Rs. {expected_recovery:.2f}"
+    f"Recovery Probability: "
+    f"{recovery_probability:.2%}"
+)
+
+print(
+    f"Expected Recovery: "
+    f"Rs. {expected_recovery:.2f}"
+)
+
+print(
+    f"Retry Priority: {priority}"
 )
 
 print(
