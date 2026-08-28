@@ -153,22 +153,37 @@ probability = model.predict_proba(transaction)[0][1]
 expected_recovery = amount * probability
 
 
-# ==============================
-# RECOMMENDATION
-# ==============================
+# ========================================
+# RECOVERAI DECISION ENGINE
+# ========================================
 
-if probability >= 0.70:
-
+if recovery_probability >= 0.75:
     recommendation = "HIGH PRIORITY RETRY"
+    priority = "HIGH"
 
-elif probability >= 0.40:
-
+elif recovery_probability >= 0.50:
     recommendation = "RETRY WITH CAUTION"
+    priority = "MEDIUM"
+
+elif recovery_probability >= 0.25:
+    recommendation = "LOW PRIORITY RETRY"
+    priority = "LOW"
 
 else:
+    recommendation = "DO NOT RETRY"
+    priority = "VERY LOW"
 
-    recommendation = "LOW PRIORITY RETRY"
+print("\n========================================")
+print("        RECOVERAI DECISION")
+print("========================================")
 
+print(f"Transaction Amount: Rs. {amount:.2f}")
+print(f"Recovery Probability: {recovery_probability * 100:.2f}%")
+print(f"Expected Recovery: Rs. {expected_recovery:.2f}")
+print(f"Retry Priority: {priority}")
+print(f"Recommendation: {recommendation}")
+
+print("========================================")
 
 # ==============================
 # DISPLAY RESULT
