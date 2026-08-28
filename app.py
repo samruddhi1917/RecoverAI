@@ -3,20 +3,20 @@ import pandas as pd
 import joblib
 
 
-# ==========================================
+# ============================================================
 # PAGE CONFIGURATION
-# ==========================================
+# ============================================================
 
 st.set_page_config(
     page_title="RecoverAI",
-    page_icon="💰",
+    page_icon="💳",
     layout="wide"
 )
 
 
-# ==========================================
+# ============================================================
 # LOAD MODEL
-# ==========================================
+# ============================================================
 
 @st.cache_resource
 def load_model():
@@ -26,291 +26,243 @@ def load_model():
 model = load_model()
 
 
-# ==========================================
-# CUSTOM CSS
-# ==========================================
-
-st.markdown("""
-<style>
-
-.main {
-    background-color: #f8fafc;
-}
-
-.title {
-    font-size: 42px;
-    font-weight: 800;
-    margin-bottom: 0px;
-}
-
-.subtitle {
-    font-size: 18px;
-    color: #64748b;
-    margin-bottom: 30px;
-}
-
-.result-card {
-    padding: 25px;
-    border-radius: 15px;
-    background-color: #ffffff;
-    border: 1px solid #e2e8f0;
-    text-align: center;
-}
-
-.result-number {
-    font-size: 36px;
-    font-weight: 800;
-}
-
-.result-label {
-    font-size: 15px;
-    color: #64748b;
-}
-
-</style>
-""", unsafe_allow_html=True)
-
-
-# ==========================================
+# ============================================================
 # HEADER
-# ==========================================
+# ============================================================
 
-st.markdown(
-    '<div class="title">💰 RecoverAI</div>',
-    unsafe_allow_html=True
-)
+st.title("💳 RecoverAI")
+st.subheader("AI-Powered Payment Recovery Intelligence")
 
-st.markdown(
-    '<div class="subtitle">'
-    'AI-powered payment failure recovery and revenue optimization'
-    '</div>',
-    unsafe_allow_html=True
+st.write(
+    "RecoverAI predicts the probability of recovering a failed payment "
+    "and estimates the expected revenue that can be recovered."
 )
 
 st.divider()
 
 
-# ==========================================
-# INPUT SECTION
-# ==========================================
+# ============================================================
+# SIDEBAR
+# ============================================================
 
-st.subheader("📋 Transaction Details")
+st.sidebar.header("⚙️ Transaction Details")
 
-col1, col2, col3 = st.columns(3)
+amount = st.sidebar.number_input(
+    "Transaction Amount (₹)",
+    min_value=500.01,
+    max_value=99999.99,
+    value=5000.00,
+    step=100.00
+)
 
+payment_method = st.sidebar.selectbox(
+    "Payment Method",
+    ["UPI", "CARD", "NETBANKING", "WALLET"]
+)
 
-with col1:
+merchant_category = st.sidebar.selectbox(
+    "Merchant Category",
+    [
+        "ELECTRONICS",
+        "CLOTHING",
+        "GROCERIES",
+        "FOOD",
+        "TRAVEL",
+        "HOME_APPLIANCES"
+    ]
+)
 
-    amount = st.number_input(
-        "Transaction Amount (₹)",
-        min_value=0.01,
-        max_value=99999.99,
-        value=590.00,
-        step=10.0
-    )
+failure_category = st.sidebar.selectbox(
+    "Failure Category",
+    [
+        "TEMPORARY",
+        "CUSTOMER_ACTION",
+        "PAYMENT_METHOD",
+        "SYSTEM"
+    ]
+)
 
-    payment_method = st.selectbox(
-        "Payment Method",
-        [
-            "UPI",
-            "CARD",
-            "NETBANKING",
-            "WALLET"
-        ]
-    )
+failure_reason = st.sidebar.selectbox(
+    "Failure Reason",
+    [
+        "NETWORK_TIMEOUT",
+        "GATEWAY_TIMEOUT",
+        "INSUFFICIENT_FUNDS",
+        "AUTHENTICATION_REQUIRED",
+        "EXPIRED_CARD",
+        "INVALID_CARD",
+        "PROCESSING_ERROR",
+        "TEMPORARY_SERVICE_ERROR"
+    ]
+)
 
-    merchant_category = st.selectbox(
-        "Merchant Category",
-        [
-            "ELECTRONICS",
-            "CLOTHING",
-            "GROCERIES",
-            "FOOD",
-            "TRAVEL",
-            "HOME_APPLIANCES"
-        ]
-    )
+retry_count = st.sidebar.number_input(
+    "Retry Count",
+    min_value=0,
+    max_value=10,
+    value=1,
+    step=1
+)
 
-    failure_category = st.selectbox(
-        "Failure Category",
-        [
-            "TEMPORARY",
-            "CUSTOMER_ACTION",
-            "PAYMENT_METHOD",
-            "SYSTEM"
-        ]
-    )
+if retry_count > 0:
 
-
-with col2:
-
-    failure_reason = st.selectbox(
-        "Failure Reason",
-        [
-            "NETWORK_TIMEOUT",
-            "GATEWAY_TIMEOUT",
-            "INSUFFICIENT_FUNDS",
-            "AUTHENTICATION_REQUIRED",
-            "EXPIRED_CARD",
-            "INVALID_CARD",
-            "PROCESSING_ERROR",
-            "TEMPORARY_SERVICE_ERROR"
-        ]
-    )
-
-    retry_count = st.number_input(
-        "Retry Count",
-        min_value=0,
-        max_value=20,
-        value=1,
-        step=1
-    )
-
-    last_retry_hours_ago = st.number_input(
+    last_retry_hours_ago = st.sidebar.number_input(
         "Hours Since Last Retry",
-        min_value=0.0,
-        max_value=720.0,
+        min_value=0.1,
+        max_value=72.0,
         value=2.0,
-        step=1.0
+        step=0.1
     )
 
-    device_type = st.selectbox(
-        "Device Type",
-        [
-            "PHONE",
-            "DESKTOP",
-            "TABLET"
-        ]
-    )
+else:
+
+    last_retry_hours_ago = None
 
 
-with col3:
+device_type = st.sidebar.selectbox(
+    "Device Type",
+    ["PHONE", "DESKTOP", "TABLET"]
+)
 
-    region = st.text_input(
-        "Region / State",
-        value="MAHARASHTRA"
-    ).upper()
+region = st.sidebar.selectbox(
+    "Region",
+    [
+        "MAHARASHTRA",
+        "KARNATAKA",
+        "DELHI",
+        "TELANGANA",
+        "TAMIL_NADU",
+        "GUJARAT",
+        "WEST_BENGAL",
+        "UTTAR_PRADESH"
+    ]
+)
 
-    transaction_hour = st.slider(
-        "Transaction Hour",
-        min_value=0,
-        max_value=23,
-        value=10
-    )
+transaction_hour = st.sidebar.slider(
+    "Transaction Hour",
+    min_value=0,
+    max_value=23,
+    value=12
+)
 
-    subscription_active = st.selectbox(
-        "Subscription Active?",
-        [
-            1,
-            0
-        ],
-        format_func=lambda x: "Yes" if x == 1 else "No"
-    )
+subscription_active = st.sidebar.selectbox(
+    "Subscription Active?",
+    ["Yes", "No"]
+)
 
-    customer_lifetime_value = st.number_input(
-        "Customer Lifetime Value (₹)",
-        min_value=0.01,
-        max_value=100000.00,
-        value=25000.00,
-        step=100.0
-    )
+previous_successful_payments = st.sidebar.number_input(
+    "Previous Successful Payments",
+    min_value=0,
+    max_value=100,
+    value=8
+)
 
+previous_failed_payments = st.sidebar.number_input(
+    "Previous Failed Payments",
+    min_value=0,
+    max_value=100,
+    value=1
+)
 
-st.subheader("👤 Customer Payment History")
-
-col4, col5 = st.columns(2)
-
-with col4:
-
-    previous_successful_payments = st.number_input(
-        "Previous Successful Payments",
-        min_value=0,
-        max_value=1000,
-        value=8,
-        step=1
-    )
-
-with col5:
-
-    previous_failed_payments = st.number_input(
-        "Previous Failed Payments",
-        min_value=0,
-        max_value=1000,
-        value=1,
-        step=1
-    )
-
-
-st.write("")
-
-
-# ==========================================
-# PREDICTION BUTTON
-# ==========================================
-
-predict_button = st.button(
-    "🚀 Predict Recovery",
-    use_container_width=True
+customer_lifetime_value = st.sidebar.number_input(
+    "Customer Lifetime Value (₹)",
+    min_value=500.01,
+    max_value=100000.00,
+    value=25000.00,
+    step=500.00
 )
 
 
-# ==========================================
-# PREDICTION
-# ==========================================
+# ============================================================
+# ENGINEERED FEATURES
+# ============================================================
 
-if predict_button:
+total_previous_payments = (
+    previous_successful_payments
+    + previous_failed_payments
+)
 
-    # --------------------------------------
-    # ENGINEERED FEATURES
-    # --------------------------------------
+if total_previous_payments > 0:
 
-    total_previous_payments = (
+    customer_success_rate = (
         previous_successful_payments
-        + previous_failed_payments
+        / total_previous_payments
     )
 
-    if total_previous_payments > 0:
+else:
 
-        customer_success_rate = (
-            previous_successful_payments
-            / total_previous_payments
-        )
-
-    else:
-
-        customer_success_rate = 0
+    customer_success_rate = 0
 
 
-    has_been_retried = int(
-        retry_count > 0
+has_been_retried = int(retry_count > 0)
+
+
+if customer_lifetime_value > 0:
+
+    amount_to_lifetime_value_ratio = (
+        amount / customer_lifetime_value
+    )
+
+else:
+
+    amount_to_lifetime_value_ratio = 0
+
+
+has_retry_timestamp = int(retry_count > 0)
+
+
+# ============================================================
+# MAIN DASHBOARD
+# ============================================================
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+
+    st.metric(
+        "Transaction Amount",
+        f"₹{amount:,.2f}"
+    )
+
+with col2:
+
+    st.metric(
+        "Customer Success Rate",
+        f"{customer_success_rate:.1%}"
+    )
+
+with col3:
+
+    st.metric(
+        "Previous Failed Payments",
+        previous_failed_payments
     )
 
 
-    if customer_lifetime_value > 0:
-
-        amount_to_lifetime_value_ratio = (
-            amount
-            / customer_lifetime_value
-        )
-
-    else:
-
-        amount_to_lifetime_value_ratio = 0
+st.divider()
 
 
-    has_retry_timestamp = int(
-        retry_count > 0
+# ============================================================
+# PREDICTION BUTTON
+# ============================================================
+
+if st.button(
+    "🔮 Predict Recovery",
+    use_container_width=True
+):
+
+    # --------------------------------------------------------
+    # SUBSCRIPTION CONVERSION
+    # --------------------------------------------------------
+
+    subscription_value = (
+        1 if subscription_active == "Yes" else 0
     )
 
 
-    if retry_count == 0:
-
-        last_retry_hours_ago = None
-
-
-    # --------------------------------------
-    # CREATE TRANSACTION DATAFRAME
-    # --------------------------------------
+    # --------------------------------------------------------
+    # CREATE INPUT DATAFRAME
+    # --------------------------------------------------------
 
     transaction = pd.DataFrame([{
 
@@ -334,7 +286,7 @@ if predict_button:
 
         "transaction_hour": transaction_hour,
 
-        "subscription_active": subscription_active,
+        "subscription_active": subscription_value,
 
         "previous_successful_payments":
             previous_successful_payments,
@@ -360,9 +312,9 @@ if predict_button:
     }])
 
 
-    # --------------------------------------
+    # --------------------------------------------------------
     # MODEL PREDICTION
-    # --------------------------------------
+    # --------------------------------------------------------
 
     recovery_probability = model.predict_proba(
         transaction
@@ -374,9 +326,9 @@ if predict_button:
     )
 
 
-    # ======================================
+    # ========================================================
     # DECISION ENGINE
-    # ======================================
+    # ========================================================
 
     if recovery_probability >= 0.75:
 
@@ -399,34 +351,32 @@ if predict_button:
         priority = "VERY LOW"
 
 
-    # ======================================
+    # ========================================================
     # RESULTS
-    # ======================================
+    # ========================================================
 
     st.divider()
 
-    st.subheader("🤖 RecoverAI Prediction")
-
-    r1, r2, r3 = st.columns(3)
+    st.header("📊 RecoverAI Prediction")
 
 
-    with r1:
+    result1, result2, result3 = st.columns(3)
+
+    with result1:
 
         st.metric(
             "Recovery Probability",
             f"{recovery_probability:.2%}"
         )
 
-
-    with r2:
+    with result2:
 
         st.metric(
             "Expected Recovery",
             f"₹{expected_recovery:,.2f}"
         )
 
-
-    with r3:
+    with result3:
 
         st.metric(
             "Retry Priority",
@@ -434,94 +384,112 @@ if predict_button:
         )
 
 
-    st.write("")
+    # --------------------------------------------------------
+    # PROBABILITY BAR
+    # --------------------------------------------------------
+
+    st.subheader("Recovery Potential")
+
+    st.progress(
+        float(recovery_probability)
+    )
 
 
-    # ======================================
+    # --------------------------------------------------------
     # RECOMMENDATION
-    # ======================================
+    # --------------------------------------------------------
 
     if priority == "HIGH":
 
         st.success(
-            f"🚀 **{recommendation}**"
+            f"🚀 {recommendation}"
         )
 
     elif priority == "MEDIUM":
 
         st.warning(
-            f"⚠️ **{recommendation}**"
+            f"⚠️ {recommendation}"
         )
 
     elif priority == "LOW":
 
         st.info(
-            f"ℹ️ **{recommendation}**"
+            f"ℹ️ {recommendation}"
         )
 
     else:
 
         st.error(
-            f"🛑 **{recommendation}**"
+            f"🛑 {recommendation}"
         )
 
 
-    # ======================================
-    # REVENUE INSIGHT
-    # ======================================
+    # ========================================================
+    # EXPLANATION
+    # ========================================================
 
-    st.subheader("💡 Revenue Insight")
+    st.subheader("🧠 Recovery Analysis")
 
-    col6, col7 = st.columns(2)
+    analysis = []
 
-    with col6:
-
-        st.write(
-            f"**Transaction Value:** "
-            f"₹{amount:,.2f}"
+    if failure_category == "TEMPORARY":
+        analysis.append(
+            "Temporary failure detected — retrying may be viable."
         )
 
-        st.write(
-            f"**Potential Revenue Recovered:** "
-            f"₹{expected_recovery:,.2f}"
+    if failure_reason in [
+        "NETWORK_TIMEOUT",
+        "GATEWAY_TIMEOUT",
+        "TEMPORARY_SERVICE_ERROR"
+    ]:
+        analysis.append(
+            "The failure reason indicates a potentially temporary issue."
         )
 
-
-    with col7:
-
-        unrecovered_amount = (
-            amount - expected_recovery
+    if customer_success_rate >= 0.70:
+        analysis.append(
+            "Customer has a strong historical payment success rate."
         )
 
-        st.write(
-            f"**Potential Unrecovered Amount:** "
-            f"₹{unrecovered_amount:,.2f}"
+    elif customer_success_rate < 0.40:
+        analysis.append(
+            "Customer has a relatively low historical payment success rate."
         )
 
-        st.write(
-            f"**Customer Success Rate:** "
-            f"{customer_success_rate:.2%}"
+    if previous_failed_payments >= 5:
+        analysis.append(
+            "High previous failure count reduces recovery confidence."
         )
 
+    if retry_count >= 3:
+        analysis.append(
+            "Multiple retries have already occurred."
+        )
 
-    # ======================================
-    # MODEL INPUT PREVIEW
-    # ======================================
+    if subscription_value == 1:
+        analysis.append(
+            "Active subscription is a positive customer signal."
+        )
 
-    with st.expander("🔍 View Model Input"):
+    if not analysis:
+        analysis.append(
+            "Recovery decision is primarily based on the trained ML model."
+        )
+
+    for item in analysis:
+
+        st.write("•", item)
+
+
+    # ========================================================
+    # TRANSACTION SUMMARY
+    # ========================================================
+
+    with st.expander("🔍 View Transaction Features"):
 
         st.dataframe(
-            transaction,
+            transaction.T.rename(
+                columns={0: "Value"}
+            ),
             use_container_width=True
         )
-
-
-# ==========================================
-# FOOTER
-# ==========================================
-
-st.divider()
-
-st.caption(
-    "RecoverAI • AI-powered revenue recovery prototype"
-)
