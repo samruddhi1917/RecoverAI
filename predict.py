@@ -36,7 +36,7 @@ expected_recovery = 590 * probability
 
 print("\n========== RECOVERAI PREDICTION ==========")
 
-print(f"Transaction Amount: ₹590")
+print(f"Transaction Amount: Rs. 590")
 print(f"Recovery Probability: {probability:.2%}")
 print(f"Expected Recovery: ₹{expected_recovery:.2f}")
 
