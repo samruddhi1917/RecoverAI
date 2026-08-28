@@ -325,6 +325,88 @@ if st.button(
         amount * recovery_probability
     )
 
+# ==============================
+# EXPLAINABLE AI
+# ==============================
+
+reasons = []
+
+# Customer history
+if customer_success_rate >= 0.75:
+    reasons.append(
+        "Strong customer payment history"
+    )
+elif customer_success_rate <= 0.40:
+    reasons.append(
+        "Low customer payment success rate"
+    )
+
+# Failure type
+if failure_category == "TEMPORARY":
+    reasons.append(
+        "Temporary failure is often recoverable"
+    )
+elif failure_category == "SYSTEM":
+    reasons.append(
+        "System-related failure may resolve on retry"
+    )
+elif failure_category == "PAYMENT_METHOD":
+    reasons.append(
+        "Payment-method issue increases retry risk"
+    )
+
+# Failure reason
+if failure_reason in [
+    "NETWORK_TIMEOUT",
+    "GATEWAY_TIMEOUT",
+    "TEMPORARY_SERVICE_ERROR"
+]:
+    reasons.append(
+        "Temporary connectivity/service issue detected"
+    )
+
+elif failure_reason == "INSUFFICIENT_FUNDS":
+    reasons.append(
+        "Insufficient funds may reduce recovery probability"
+    )
+
+# Retry history
+if retry_count == 0:
+    reasons.append(
+        "No previous retry attempt"
+    )
+elif retry_count == 1:
+    reasons.append(
+        "Only one retry attempt has been made"
+    )
+else:
+    reasons.append(
+        "Multiple retry attempts detected"
+    )
+
+# Subscription
+if subscription_active == 1:
+    reasons.append(
+        "Active subscription indicates an ongoing customer relationship"
+    )
+
+# Customer value
+if customer_lifetime_value >= 50000:
+    reasons.append(
+        "High customer lifetime value"
+    )
+
+# Amount relative to customer value
+if amount_to_lifetime_value_ratio <= 0.10:
+    reasons.append(
+        "Transaction amount is relatively small compared with customer lifetime value"
+    )
+
+# Fallback
+if len(reasons) == 0:
+    reasons.append(
+        "Prediction is based on transaction, customer and failure characteristics"
+    )
 
     # ========================================================
     # DECISION ENGINE
