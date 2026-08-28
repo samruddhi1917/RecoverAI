@@ -385,7 +385,7 @@ else:
     )
 
 # Subscription
-if subscription_active == 1:
+if subscription_active == "Yes":
     reasons.append(
         "Active subscription indicates an ongoing customer relationship"
     )
