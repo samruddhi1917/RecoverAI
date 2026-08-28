@@ -38,7 +38,7 @@ print("\n========== RECOVERAI PREDICTION ==========")
 
 print(f"Transaction Amount: Rs. 590")
 print(f"Recovery Probability: {probability:.2%}")
-print(f"Expected Recovery: ₹{expected_recovery:.2f}")
+print(f"Expected Recovery: Rs. {expected_recovery:.2f}")
 
 if probability >= 0.70:
     recommendation = "HIGH PRIORITY RETRY"
