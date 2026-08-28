@@ -34,9 +34,9 @@ failure_category = input(
 
 failure_reason = input(
     "Failure reason "
-    "(NETWORK_TIMEOUT/INSUFFICIENT_FUNDS/"
-    "AUTHENTICATION_REQUIRED/EXPIRED_CARD/PROCESSING_ERROR/"
-    "TEMPORARY_SERVICE_ERROR): "
+    "(NETWORK_TIMEOUT/GATEWAY_TIMEOUT/INSUFFICIENT_FUNDS/"
+    "AUTHENTICATION_REQUIRED/EXPIRED_CARD/INVALID_CARD/"
+    "PROCESSING_ERROR/TEMPORARY_SERVICE_ERROR): "
 ).upper()
 
 retry_count = int(input("Retry count: "))
@@ -46,7 +46,7 @@ last_retry_hours_ago = float(
 )
 
 device_type = input(
-    "Device type (PHONE/DESKTOP): "
+    "Device type (PHONE/DESKTOP/TABLET): "
 ).upper()
 
 region = input("Region/state: ").upper()
