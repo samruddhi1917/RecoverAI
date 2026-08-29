@@ -465,17 +465,17 @@ if st.button(
             priority
         )
 
-st.markdown("---")
+    st.markdown("---")
 
-st.subheader("🤖 Why RecoverAI Made This Decision")
+    st.subheader("🤖 Why RecoverAI Made This Decision")
 
-st.write(
-    "RecoverAI analyzed the transaction, failure characteristics, "
-    "retry history and customer payment behavior."
-)
+    st.write(
+        "RecoverAI analyzed the transaction, failure characteristics, "
+        "retry history and customer payment behavior."
+    )
 
-for reason in reasons[:5]:
-    st.markdown(f"✅ {reason}")
+    for reason in reasons[:5]:
+        st.markdown(f"✅ {reason}")
 
 
 
@@ -606,45 +606,45 @@ for reason in reasons[:5]:
     # TRANSACTION SUMMARY
     # ========================================================
 
-with st.expander("Transaction Details"):
+    with st.expander("Transaction Details"):
 
-    display_transaction = pd.DataFrame({
-        "Field": [
-            "Transaction Amount",
-            "Payment Method",
-            "Merchant Category",
-            "Failure Category",
-            "Failure Reason",
-            "Retry Count",
-            "Device Type",
-            "Region",
-            "Transaction Hour",
-            "Subscription Active",
-            "Previous Successful Payments",
-            "Previous Failed Payments",
-            "Customer Lifetime Value"
-        ],
-        "Value": [
-            f"Rs. {amount:,.2f}",
-            str(payment_method),
-            str(merchant_category),
-            str(failure_category),
-            str(failure_reason),
-            str(retry_count),
-            str(device_type),
-            str(region),
-            str(transaction_hour),
-            "Yes" if subscription_active == 1 else "No",
-            str(previous_successful_payments),
-            str(previous_failed_payments),
-            f"Rs. {customer_lifetime_value:,.2f}"
-        ]
-    })
+        display_transaction = pd.DataFrame({
+            "Field": [
+                "Transaction Amount",
+                "Payment Method",
+                "Merchant Category",
+                "Failure Category",
+                "Failure Reason",
+                "Retry Count",
+                "Device Type",
+                "Region",
+                "Transaction Hour",
+                "Subscription Active",
+                "Previous Successful Payments",
+                "Previous Failed Payments",
+                "Customer Lifetime Value"
+            ],
+            "Value": [
+                f"Rs. {amount:,.2f}",
+                str(payment_method),
+                str(merchant_category),
+                str(failure_category),
+                str(failure_reason),
+                str(retry_count),
+                str(device_type),
+                str(region),
+                str(transaction_hour),
+                "Yes" if subscription_active == 1 else "No",
+                str(previous_successful_payments),
+                str(previous_failed_payments),
+                f"Rs. {customer_lifetime_value:,.2f}"
+            ]
+        })
 
-    st.dataframe(
-        display_transaction,
-        width="stretch",
-        hide_index=True
-    )
+        st.dataframe(
+            display_transaction,
+            width="stretch",
+            hide_index=True
+        )
 
     
