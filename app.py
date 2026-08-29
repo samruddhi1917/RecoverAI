@@ -248,7 +248,7 @@ st.divider()
 
 if st.button(
     "🔮 Predict Recovery",
-    use_container_width=True
+    width="stretch"
 ):
 
     # --------------------------------------------------------
