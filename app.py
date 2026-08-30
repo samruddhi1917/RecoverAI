@@ -544,6 +544,118 @@ if st.button(
             f"🛑 {recommendation}"
         )
 
+    # ========================================================
+    # SMART RETRY STRATEGY
+    # ========================================================
+
+    st.subheader("🎯 Smart Retry Strategy")
+
+    if recovery_probability >= 0.75:
+
+        if failure_category == "TEMPORARY" or failure_reason in [
+            "NETWORK_TIMEOUT",
+            "GATEWAY_TIMEOUT",
+            "TEMPORARY_SERVICE_ERROR"
+        ]:
+
+            smart_action = "Retry payment now"
+            smart_reason = (
+                "High recovery potential combined with a "
+                "potentially temporary failure."
+            )
+
+        elif failure_category == "PAYMENT_METHOD":
+
+            smart_action = "Retry with an alternative payment method"
+            smart_reason = (
+                "Recovery potential is high, but the current "
+                "payment method may be contributing to the failure."
+            )
+
+        else:
+
+            smart_action = "Retry payment"
+            smart_reason = (
+                "The model predicts a high probability of recovery."
+            )
+
+    elif recovery_probability >= 0.50:
+
+        if retry_count >= 3:
+
+            smart_action = "Avoid another immediate retry"
+            smart_reason = (
+                "Moderate recovery potential, but multiple "
+                "previous retry attempts have already occurred."
+            )
+
+        elif failure_reason in [
+            "NETWORK_TIMEOUT",
+            "GATEWAY_TIMEOUT",
+            "TEMPORARY_SERVICE_ERROR"
+        ]:
+
+            smart_action = "Retry after a short delay"
+            smart_reason = (
+                "The failure appears temporary and the model "
+                "still identifies meaningful recovery potential."
+            )
+
+        else:
+
+            smart_action = "Retry with caution"
+            smart_reason = (
+                "The model predicts moderate recovery potential."
+            )
+
+    elif recovery_probability >= 0.25:
+
+        if failure_reason == "INSUFFICIENT_FUNDS":
+
+            smart_action = "Avoid immediate retry"
+            smart_reason = (
+                "Insufficient funds may cause another failed "
+                "payment attempt."
+            )
+
+        elif retry_count >= 3:
+
+            smart_action = "Stop repeated retries"
+            smart_reason = (
+                "Several retry attempts have already been made "
+                "with limited recovery potential."
+            )
+
+        elif failure_category == "PAYMENT_METHOD":
+
+            smart_action = "Suggest an alternative payment method"
+            smart_reason = (
+                "The current payment method may continue to fail."
+            )
+
+        else:
+
+            smart_action = "Low-priority retry"
+            smart_reason = (
+                "Recovery potential exists, but the probability "
+                "is relatively low."
+            )
+
+    else:
+
+        smart_action = "Do not retry"
+        smart_reason = (
+            "The model predicts very low recovery potential, "
+            "so another immediate attempt may not be worthwhile."
+        )
+
+    st.info(
+        f"**Recommended Action:** {smart_action}"
+    )
+
+    st.write(
+        f"**Why:** {smart_reason}"
+    )
 
     # ========================================================
     # EXPLANATION
