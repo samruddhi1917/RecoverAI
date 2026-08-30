@@ -515,6 +515,29 @@ if st.button(
             f"₹{expected_recovery:,.2f}"
         )
 
+    # ========================================================
+    # BUSINESS IMPACT
+    # ========================================================
+
+    st.subheader("💰 Business Impact")
+
+    revenue_at_risk = amount - expected_recovery
+
+    st.info(
+        f"**₹{amount:,.2f} was at risk from this failed payment.** "
+        f"RecoverAI estimates that **₹{expected_recovery:,.2f} "
+        f"could potentially be recovered**, leaving approximately "
+        f"**₹{revenue_at_risk:,.2f} still at risk.**"
+    )
+
+    st.progress(
+        float(recovery_probability)
+    )
+
+    st.caption(
+        f"Estimated recoverable share: "
+        f"{recovery_probability:.1%} of the transaction value"
+    )
 
     # --------------------------------------------------------
     # RECOMMENDATION
