@@ -746,7 +746,7 @@ if st.button(
                 str(device_type),
                 str(region),
                 str(transaction_hour),
-                "Yes" if subscription_active == 1 else "No",
+                subscription_active,
                 str(previous_successful_payments),
                 str(previous_failed_payments),
                 f"Rs. {customer_lifetime_value:,.2f}"
