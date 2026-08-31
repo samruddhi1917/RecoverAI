@@ -560,10 +560,6 @@ if st.button(
         f"**₹{revenue_at_risk:,.2f} still at risk.**"
     )
 
-    st.progress(
-        float(recovery_probability)
-    )
-
     st.caption(
         f"Estimated recoverable share: "
         f"{recovery_probability:.1%} of the transaction value"
