@@ -53,8 +53,15 @@ model = load_model()
 # HEADER
 # ============================================================
 
-st.title("💳 RecoverAI")
-st.subheader("AI-Powered Payment Recovery Intelligence")
+st.markdown(
+    '<div class="main-title">💳 RecoverAI</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    '<div class="subtitle">AI-Powered Payment Recovery Intelligence</div>',
+    unsafe_allow_html=True
+)
 
 st.write(
     "RecoverAI predicts the probability of recovering a failed payment "
