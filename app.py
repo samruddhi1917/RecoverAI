@@ -490,6 +490,97 @@ st.dataframe(
     hide_index=True
 )
 
+# ============================================================
+# RECOVERY OPPORTUNITY DASHBOARD
+# ============================================================
+
+st.divider()
+
+st.header("💰 Recovery Opportunity")
+
+st.write(
+    "RecoverAI identifies failed transactions with potential "
+    "revenue recovery opportunities."
+)
+
+# ------------------------------------------------------------
+# FAILED TRANSACTIONS
+# ------------------------------------------------------------
+
+failed_data = transactions[
+    transactions["transaction_status"] == "FAILED"
+].copy()
+
+
+# ------------------------------------------------------------
+# RECOVERY METRICS
+# ------------------------------------------------------------
+
+failed_value = failed_data["amount"].sum()
+
+potential_recovery = failed_data["expected_recovery"].sum()
+
+revenue_at_risk = failed_value - potential_recovery
+
+if failed_value > 0:
+
+    recovery_rate = potential_recovery / failed_value
+
+else:
+
+    recovery_rate = 0
+
+
+# ------------------------------------------------------------
+# DISPLAY METRICS
+# ------------------------------------------------------------
+
+op1, op2, op3, op4 = st.columns(4)
+
+with op1:
+
+    st.metric(
+        "Failed Payment Value",
+        f"₹{failed_value:,.0f}"
+    )
+
+with op2:
+
+    st.metric(
+        "Potential Recovery",
+        f"₹{potential_recovery:,.0f}"
+    )
+
+with op3:
+
+    st.metric(
+        "Revenue Still at Risk",
+        f"₹{revenue_at_risk:,.0f}"
+    )
+
+with op4:
+
+    st.metric(
+        "Recovery Rate",
+        f"{recovery_rate:.1%}"
+    )
+
+
+# ------------------------------------------------------------
+# RECOVERY PROGRESS
+# ------------------------------------------------------------
+
+st.subheader("Recovery Potential")
+
+st.progress(
+    float(recovery_rate)
+)
+
+st.caption(
+    f"RecoverAI estimates that approximately "
+    f"{recovery_rate:.1%} of failed-payment value "
+    f"could potentially be recovered."
+)
 
 # ============================================================
 # PREDICTION BUTTON
@@ -737,6 +828,44 @@ if st.button(
     st.progress(
         float(recovery_probability)
     )
+
+    # ------------------------------------------------------------
+    # RECOVERY OPPORTUNITY
+    # ------------------------------------------------------------
+
+    st.subheader("💡 Recovery Opportunity")
+
+    opportunity_amount = expected_recovery
+
+    if recovery_probability >= 0.75:
+
+        opportunity_message = (
+            f"High recovery opportunity — approximately "
+            f"₹{opportunity_amount:,.2f} may be recoverable."
+        )
+
+    elif recovery_probability >= 0.50:
+
+        opportunity_message = (
+            f"Moderate recovery opportunity — approximately "
+            f"₹{opportunity_amount:,.2f} may be recoverable."
+        )
+
+    elif recovery_probability >= 0.25:
+
+        opportunity_message = (
+            f"Limited recovery opportunity — approximately "
+            f"₹{opportunity_amount:,.2f} may be recoverable."
+        )
+
+    else:
+
+        opportunity_message = (
+            f"Low recovery opportunity — only approximately "
+            f"₹{opportunity_amount:,.2f} may be recoverable."
+        )
+
+    st.info(opportunity_message)
 
     # --------------------------------------------------------
     # EXPECTED RECOVERY
