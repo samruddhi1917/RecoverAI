@@ -83,6 +83,61 @@ st.divider()
 
 
 # ============================================================
+# TRANSACTION ANALYTICS
+# ============================================================
+
+st.header("📈 Transaction Analytics")
+
+total_transactions = len(transactions)
+
+failed_transactions = (
+    transactions["failure_category"]
+    .notna()
+    .sum()
+)
+
+total_transaction_value = transactions["amount"].sum()
+
+st.caption(
+    f"Analyzing {total_transactions:,} transactions from RecoverAI's dataset."
+)
+
+metric1, metric2, metric3 = st.columns(3)
+
+with metric1:
+    st.metric(
+        "Total Transactions",
+        f"{total_transactions:,}"
+    )
+
+with metric2:
+    st.metric(
+        "Failed Transactions",
+        f"{failed_transactions:,}"
+    )
+
+with metric3:
+    st.metric(
+        "Transaction Value",
+        f"₹{total_transaction_value:,.0f}"
+    )
+
+st.divider()
+
+# ============================================================
+# TRANSACTION DATA
+# ============================================================
+
+st.subheader("📋 Transaction Dataset")
+
+st.dataframe(
+    transactions.head(10),
+    width="stretch",
+    hide_index=True
+)
+
+
+# ============================================================
 # SIDEBAR
 # ============================================================
 
