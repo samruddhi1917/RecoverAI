@@ -15,6 +15,29 @@ st.set_page_config(
 
 
 # ============================================================
+# CUSTOM UI STYLING
+# ============================================================
+
+st.markdown("""
+<style>
+
+.main-title {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 0px;
+}
+
+.subtitle {
+    font-size: 18px;
+    opacity: 0.75;
+    margin-top: -8px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
+# ============================================================
 # LOAD MODEL
 # ============================================================
 
