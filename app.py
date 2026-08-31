@@ -48,6 +48,17 @@ def load_model():
 
 model = load_model()
 
+# ============================================================
+# LOAD TRANSACTION DATASET
+# ============================================================
+
+@st.cache_data
+def load_transactions():
+    return pd.read_csv("recoverai_transactions.csv")
+
+
+transactions = load_transactions()
+
 
 # ============================================================
 # HEADER
