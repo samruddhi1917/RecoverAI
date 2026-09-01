@@ -71,6 +71,71 @@ customer_lifetime_value = float(
     input("Customer lifetime value (Rs.): ")
 )
 
+# ============================================================
+# AUDIT TRAIL
+# ============================================================
+
+st.divider()
+
+st.header("🔐 Decision Audit Trail")
+
+st.write(
+    "RecoverAI records the key inputs and decision generated "
+    "for each prediction to support transparency and auditing."
+)
+
+if st.button("📝 Generate Audit Record", width="stretch"):
+
+    import datetime
+    import uuid
+
+    audit_id = "AUD-" + str(uuid.uuid4())[:8].upper()
+
+    audit_record = pd.DataFrame({
+        "Field": [
+            "Audit ID",
+            "Timestamp",
+            "Transaction Amount",
+            "Payment Method",
+            "Failure Category",
+            "Failure Reason",
+            "Retry Count",
+            "Recovery Probability",
+            "Expected Recovery",
+            "Retry Priority",
+            "Recommended Action"
+        ],
+        "Value": [
+            audit_id,
+            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            f"₹{amount:,.2f}",
+            payment_method,
+            failure_category,
+            failure_reason,
+            str(retry_count),
+            f"{recovery_probability:.2%}",
+            f"₹{expected_recovery:,.2f}",
+            priority,
+            smart_action
+        ]
+    })
+
+    st.success("✅ Audit record generated successfully.")
+
+    st.dataframe(
+        audit_record,
+        width="stretch",
+        hide_index=True
+    )
+
+    st.download_button(
+        "⬇️ Download Audit Record",
+        audit_record.to_csv(index=False),
+        file_name=f"{audit_id}.csv",
+        mime="text/csv",
+        width="stretch"
+    )
+
 
 # ==============================
 # ENGINEERED FEATURES
