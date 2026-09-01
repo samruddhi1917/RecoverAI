@@ -583,6 +583,32 @@ st.caption(
 )
 
 # ------------------------------------------------------------
+# RECOVERY BREAKDOWN
+# ------------------------------------------------------------
+
+st.subheader("📊 Recovery Breakdown")
+
+recovery_chart = pd.DataFrame({
+    "Category": [
+        "Potential Recovery",
+        "Revenue Still at Risk"
+    ],
+    "Amount": [
+        potential_recovery,
+        revenue_at_risk
+    ]
+})
+
+st.bar_chart(
+    recovery_chart.set_index("Category")
+)
+
+st.caption(
+    "This breakdown shows how RecoverAI estimates the failed-payment "
+    "value is divided between potential recovery and remaining risk."
+)
+
+# ------------------------------------------------------------
 # TOP RECOVERY OPPORTUNITIES
 # ------------------------------------------------------------
 
