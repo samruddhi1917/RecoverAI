@@ -1457,10 +1457,10 @@ if st.button(
             customer_lifetime_value
         ),
         "recovery_probability": float(
-            recovery_probability
+            st.session_state.recovery_probability
         ),
         "expected_recovery": float(
-            expected_recovery
+            st.session_state.expected_recovery
         ),
         "priority": priority,
         "recommendation": recommendation,
