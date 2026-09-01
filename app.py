@@ -1394,68 +1394,139 @@ if st.button(
         )
 
         # ============================================================
-    # AUDIT TRAIL
-    # ============================================================
+# 🔐 AUDIT TRAIL
+# ============================================================
 
-    st.divider()
+st.subheader("🔐 Audit Trail")
 
-    st.header("🔐 Decision Audit Trail")
+st.write(
+    "Generate a tamper-evident audit record for this recovery decision."
+)
 
-    st.write(
-        "RecoverAI records the key inputs and decision generated "
-        "for each prediction to support transparency and auditing."
+# Create audit record when button is clicked
+if st.button(
+    "📝 Generate Audit Trail Record",
+    width="stretch"
+):
+
+    import hashlib
+    import json
+    from datetime import datetime
+
+    # --------------------------------------------------------
+    # CREATE AUDIT RECORD
+    # --------------------------------------------------------
+
+    audit_record = {
+        "timestamp": datetime.now().isoformat(),
+        "transaction_amount": float(amount),
+        "payment_method": payment_method,
+        "merchant_category": merchant_category,
+        "failure_category": failure_category,
+        "failure_reason": failure_reason,
+        "retry_count": int(retry_count),
+        "device_type": device_type,
+        "region": region,
+        "transaction_hour": int(transaction_hour),
+        "subscription_active": subscription_active,
+        "previous_successful_payments": int(
+            previous_successful_payments
+        ),
+        "previous_failed_payments": int(
+            previous_failed_payments
+        ),
+        "customer_lifetime_value": float(
+            customer_lifetime_value
+        ),
+        "recovery_probability": float(
+            recovery_probability
+        ),
+        "expected_recovery": float(
+            expected_recovery
+        ),
+        "priority": priority,
+        "recommendation": recommendation,
+        "smart_action": smart_action
+    }
+
+    # --------------------------------------------------------
+    # CREATE HASH
+    # --------------------------------------------------------
+
+    audit_json = json.dumps(
+        audit_record,
+        sort_keys=True
     )
 
-    if st.button("📝 Generate Audit Record", width="stretch"):
+    audit_hash = hashlib.sha256(
+        audit_json.encode()
+    ).hexdigest()
 
-        import datetime
-        import uuid
+    audit_record["audit_hash"] = audit_hash
 
-        audit_id = "AUD-" + str(uuid.uuid4())[:8].upper()
+    # --------------------------------------------------------
+    # SAVE IN SESSION STATE
+    # --------------------------------------------------------
 
-        audit_record = pd.DataFrame({
-            "Field": [
-                "Audit ID",
-                "Timestamp",
-                "Transaction Amount",
-                "Payment Method",
-                "Failure Category",
-                "Failure Reason",
-                "Retry Count",
-                "Recovery Probability",
-                "Expected Recovery",
-                "Retry Priority",
-                "Recommended Action"
-            ],
-            "Value": [
-                audit_id,
-                datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                f"₹{amount:,.2f}",
-                payment_method,
-                failure_category,
-                failure_reason,
-                str(retry_count),
-                f"{recovery_probability:.2%}",
-                f"₹{expected_recovery:,.2f}",
-                priority,
-                smart_action
-            ]
-        })
+    st.session_state["audit_record"] = audit_record
 
-        st.success("✅ Audit record generated successfully.")
+    st.success(
+        "✅ Audit trail record generated successfully."
+    )
 
-        st.dataframe(
-            audit_record,
-            width="stretch",
-            hide_index=True
-        )
 
-        st.download_button(
-            "⬇️ Download Audit Record",
-            audit_record.to_csv(index=False),
-            file_name=f"{audit_id}.csv",
-            mime="text/csv",
-            width="stretch"
-        )
+# ============================================================
+# DISPLAY AUDIT RECORD
+# ============================================================
+
+if "audit_record" in st.session_state:
+
+    audit_record = st.session_state["audit_record"]
+
+    st.markdown("### 📄 Audit Record")
+
+    audit_display = pd.DataFrame({
+        "Field": [
+            "Timestamp",
+            "Recovery Probability",
+            "Expected Recovery",
+            "Priority",
+            "Recommendation",
+            "Smart Action",
+            "Audit Hash"
+        ],
+        "Value": [
+            audit_record["timestamp"],
+            f'{audit_record["recovery_probability"]:.2%}',
+            f'₹{audit_record["expected_recovery"]:,.2f}',
+            audit_record["priority"],
+            audit_record["recommendation"],
+            audit_record["smart_action"],
+            audit_record["audit_hash"]
+        ]
+    })
+
+    st.dataframe(
+        audit_display,
+        width="stretch",
+        hide_index=True
+    )
+
+    # --------------------------------------------------------
+    # DOWNLOAD AUDIT RECORD
+    # --------------------------------------------------------
+
+    audit_download = json.dumps(
+        audit_record,
+        indent=4
+    )
+
+    st.download_button(
+        label="⬇️ Download Audit Record",
+        data=audit_download,
+        file_name="recoverai_audit_record.json",
+        mime="application/json",
+        width="stretch"
+    )
 
         
