@@ -1456,12 +1456,8 @@ if st.button(
         "customer_lifetime_value": float(
             customer_lifetime_value
         ),
-        "recovery_probability": float(
-            st.session_state.recovery_probability
-        ),
-        "expected_recovery": float(
-            st.session_state.expected_recovery
-        ),
+        "recovery_probability": f"{st.session_state.recovery_probability:.2%}",
+        "expected_recovery": f"₹{st.session_state.expected_recovery:,.2f}",
         "priority": priority,
         "recommendation": recommendation,
         "smart_action": smart_action
