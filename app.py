@@ -863,6 +863,11 @@ if st.button(
         amount * recovery_probability
     )
 
+    # Store results so other dashboard sections can use them
+    st.session_state.recovery_probability = recovery_probability
+    st.session_state.expected_recovery = expected_recovery
+    st.session_state.prediction_generated = True
+
     # ==============================
     # EXPLAINABLE AI
     # ==============================
