@@ -598,8 +598,7 @@ chart_data = pd.DataFrame({
     "Amount": [
         failed_value,
         potential_recovery,
-        revenue_at_risk
-    ]
+        revenue_at_risk    ]
 })
 
 st.bar_chart(
