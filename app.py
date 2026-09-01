@@ -929,6 +929,58 @@ if st.button(
         float(recovery_probability)
     )
 
+    # ============================================================
+# TOP RECOVERY OPPORTUNITIES
+# ============================================================
+
+st.subheader("🔥 Top Recovery Opportunities")
+
+st.write(
+    "Failed transactions ranked by estimated recoverable revenue."
+)
+
+# Work only with failed payments
+opportunity_data = transactions[
+    transactions["transaction_status"] == "FAILED"
+].copy()
+
+# Rank by expected recovery
+opportunity_data = opportunity_data.sort_values(
+    by="expected_recovery",
+    ascending=False
+)
+
+# Show top 10 opportunities
+top_opportunities = opportunity_data.head(10).copy()
+
+# Select useful columns
+opportunity_columns = [
+    "transaction_id",
+    "customer_id",
+    "amount",
+    "failure_category",
+    "failure_reason",
+    "retry_count",
+    "recovery_probability",
+    "expected_recovery"
+]
+
+st.dataframe(
+    top_opportunities[opportunity_columns],
+    width="stretch",
+    hide_index=True
+)
+
+# Total value represented by top opportunities
+top_opportunity_value = top_opportunities[
+    "expected_recovery"
+].sum()
+
+st.caption(
+    f"💡 Top 10 opportunities represent approximately "
+    f"₹{top_opportunity_value:,.0f} in potential recovery."
+)
+
     # ------------------------------------------------------------
     # RECOVERY OPPORTUNITY
     # ------------------------------------------------------------
