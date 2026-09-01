@@ -768,6 +768,19 @@ else:
     st.info("No failed transactions available for recovery analysis.")
 
 # ============================================================
+# STORE PREDICTION RESULTS
+# ============================================================
+
+if "prediction_generated" not in st.session_state:
+    st.session_state.prediction_generated = False
+
+if "recovery_probability" not in st.session_state:
+    st.session_state.recovery_probability = 0.0
+
+if "expected_recovery" not in st.session_state:
+    st.session_state.expected_recovery = 0.0
+
+# ============================================================
 # PREDICTION BUTTON
 # ============================================================
 
