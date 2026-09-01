@@ -622,6 +622,50 @@ def get_priority(probability):
 
     if probability >= 0.75:
         return "HIGH"
+
+    elif probability >= 0.50:
+        return "MEDIUM"
+
+    elif probability >= 0.25:
+        return "LOW"
+
+    else:
+        return "VERY LOW"
+
+
+failed_priority_data["priority"] = (
+    failed_priority_data["recovery_probability"]
+    .apply(get_priority)
+)
+
+priority_counts = (
+    failed_priority_data["priority"]
+    .value_counts()
+    .reindex(
+        ["HIGH", "MEDIUM", "LOW", "VERY LOW"],
+        fill_value=0
+    )
+)
+
+st.bar_chart(priority_counts)
+
+st.caption(
+    "Transactions are prioritized based on their predicted "
+    "recovery probability."
+)
+
+# ============================================================
+# RECOVERY PRIORITY DISTRIBUTION
+# ============================================================
+
+st.subheader("🎯 Recovery Priority Distribution")
+
+failed_priority_data = failed_data.copy()
+
+def get_priority(probability):
+
+    if probability >= 0.75:
+        return "HIGH"
     elif probability >= 0.50:
         return "MEDIUM"
     elif probability >= 0.25:
