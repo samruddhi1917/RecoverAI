@@ -975,6 +975,18 @@ if st.button(
         recommendation = "DO NOT RETRY"
         priority = "VERY LOW"
 
+        # ========================================================
+    # SAVE PREDICTION FOR AUDIT TRAIL
+    # ========================================================
+
+    st.session_state.last_prediction = {
+        "recovery_probability": recovery_probability,
+        "expected_recovery": expected_recovery,
+        "priority": priority,
+        "recommendation": recommendation,
+        "smart_action": ""
+    }
+
 
     # ========================================================
     # RESULTS
@@ -1309,6 +1321,8 @@ if st.button(
         f"**Why:** {smart_reason}"
     )
 
+    st.session_state.last_prediction["smart_action"] = smart_action
+
     # ========================================================
     # EXPLANATION
     # ========================================================
@@ -1411,82 +1425,82 @@ if st.button(
             hide_index=True
         )
 
-# ============================================================
-# AUDIT TRAIL
-# ============================================================
+    # ============================================================
+    # AUDIT TRAIL
+    # ============================================================
 
-st.divider()
+    st.divider()
 
-st.header("🧾 Audit Trail")
+    st.header("🧾 Audit Trail")
 
-st.write(
-    "Generate a transparent record of RecoverAI's recovery decision."
-)
-
-if "audit_record" not in st.session_state:
-    st.session_state.audit_record = None
-
-
-if st.button(
-    "📋 Generate Audit Trail Record",
-    width="stretch"
-):
-
-    # Make sure prediction has been generated first
-    if "last_prediction" not in st.session_state:
-
-        st.warning(
-            "⚠️ Please click '🔮 Predict Recovery' first."
-        )
-
-    else:
-
-        prediction = st.session_state.last_prediction
-
-        audit_record = {
-            "Transaction Amount": amount,
-            "Payment Method": payment_method,
-            "Merchant Category": merchant_category,
-            "Failure Category": failure_category,
-            "Failure Reason": failure_reason,
-            "Retry Count": retry_count,
-            "Customer Success Rate": customer_success_rate,
-            "Customer Lifetime Value": customer_lifetime_value,
-
-            "Recovery Probability":
-                prediction["recovery_probability"],
-
-            "Expected Recovery":
-                prediction["expected_recovery"],
-
-            "Priority":
-                prediction["priority"],
-
-            "Recommendation":
-                prediction["recommendation"],
-
-            "Smart Action":
-                prediction["smart_action"]
-        }
-
-        st.session_state.audit_record = audit_record
-
-        st.success(
-            "✅ Audit trail record generated successfully."
-        )
-
-
-if st.session_state.audit_record is not None:
-
-    st.subheader("Audit Record")
-
-    audit_df = pd.DataFrame(
-        list(st.session_state.audit_record.items()),
-        columns=["Field", "Value"]
+    st.write(
+        "Generate a transparent record of RecoverAI's recovery decision."
     )
 
-    st.dataframe(
-        audit_df,
-        width="stretch",
-        hide_index=True
-    )
+    if "audit_record" not in st.session_state:
+        st.session_state.audit_record = None
+
+
+    if st.button(
+        "📋 Generate Audit Trail Record",
+        width="stretch"
+    ):
+
+        # Make sure prediction has been generated first
+        if "last_prediction" not in st.session_state:
+
+            st.warning(
+                "⚠️ Please click '🔮 Predict Recovery' first."
+            )
+
+        else:
+
+            prediction = st.session_state.last_prediction
+
+            audit_record = {
+                "Transaction Amount": amount,
+                "Payment Method": payment_method,
+                "Merchant Category": merchant_category,
+                "Failure Category": failure_category,
+                "Failure Reason": failure_reason,
+                "Retry Count": retry_count,
+                "Customer Success Rate": customer_success_rate,
+                "Customer Lifetime Value": customer_lifetime_value,
+
+                "Recovery Probability":
+                    prediction["recovery_probability"],
+
+                "Expected Recovery":
+                    prediction["expected_recovery"],
+
+                "Priority":
+                    prediction["priority"],
+
+                "Recommendation":
+                    prediction["recommendation"],
+
+                "Smart Action":
+                    prediction["smart_action"]
+            }
+
+            st.session_state.audit_record = audit_record
+
+            st.success(
+                "✅ Audit trail record generated successfully."
+            )
+
+
+    if st.session_state.audit_record is not None:
+
+        st.subheader("Audit Record")
+
+        audit_df = pd.DataFrame(
+            list(st.session_state.audit_record.items()),
+            columns=["Field", "Value"]
+        )
+
+        st.dataframe(
+            audit_df,
+            width="stretch",
+            hide_index=True
+        )
