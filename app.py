@@ -582,6 +582,52 @@ st.caption(
     f"could potentially be recovered."
 )
 
+# ------------------------------------------------------------
+# TOP RECOVERY OPPORTUNITIES
+# ------------------------------------------------------------
+
+st.subheader("🎯 Top Recovery Opportunities")
+
+if not failed_data.empty:
+
+    opportunity_data = failed_data.copy()
+
+    opportunity_data["recovery_priority"] = (
+        opportunity_data["recovery_probability"]
+        .apply(
+            lambda x:
+                "HIGH" if x >= 0.75
+                else "MEDIUM" if x >= 0.50
+                else "LOW"
+        )
+    )
+
+    opportunity_data = opportunity_data.sort_values(
+        by="expected_recovery",
+        ascending=False
+    )
+
+    opportunity_columns = [
+        "transaction_id",
+        "customer_id",
+        "amount",
+        "failure_category",
+        "failure_reason",
+        "recovery_probability",
+        "expected_recovery",
+        "recovery_priority"
+    ]
+
+    st.dataframe(
+        opportunity_data[opportunity_columns].head(10),
+        width="stretch",
+        hide_index=True
+    )
+
+else:
+
+    st.info("No failed transactions available for recovery analysis.")
+
 # ============================================================
 # PREDICTION BUTTON
 # ============================================================
