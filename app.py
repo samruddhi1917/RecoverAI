@@ -1425,82 +1425,96 @@ if st.button(
             hide_index=True
         )
 
-    # ============================================================
-    # AUDIT TRAIL
-    # ============================================================
+# ============================================================
+# AUDIT TRAIL
+# ============================================================
 
-    st.divider()
+st.divider()
 
-    st.header("🧾 Audit Trail")
+st.header("🧾 Audit Trail")
 
-    st.write(
-        "Generate a transparent record of RecoverAI's recovery decision."
+st.write(
+    "Generate a transparent record of RecoverAI's recovery decision."
+)
+
+# Initialize audit record
+if "audit_record" not in st.session_state:
+    st.session_state.audit_record = None
+
+
+# ------------------------------------------------------------
+# GENERATE AUDIT TRAIL
+# ------------------------------------------------------------
+
+if st.button(
+    "📋 Generate Audit Trail Record",
+    width="stretch"
+):
+
+    # Check whether prediction exists
+    if "last_prediction" not in st.session_state:
+
+        st.warning(
+            "⚠️ Please click '🔮 Predict Recovery' first."
+        )
+
+    else:
+
+        prediction = st.session_state.last_prediction
+
+        audit_record = {
+            "Transaction Amount": f"₹{amount:,.2f}",
+            "Payment Method": payment_method,
+            "Merchant Category": merchant_category,
+            "Failure Category": failure_category,
+            "Failure Reason": failure_reason,
+            "Retry Count": retry_count,
+            "Customer Success Rate": f"{customer_success_rate:.1%}",
+            "Customer Lifetime Value": f"₹{customer_lifetime_value:,.2f}",
+
+            "Recovery Probability":
+                f"{prediction['recovery_probability']:.2%}",
+
+            "Expected Recovery":
+                f"₹{prediction['expected_recovery']:,.2f}",
+
+            "Priority":
+                prediction["priority"],
+
+            "Recommendation":
+                prediction["recommendation"],
+
+            "Smart Action":
+                prediction["smart_action"]
+        }
+
+        st.session_state.audit_record = audit_record
+
+        st.success(
+            "✅ Audit trail record generated successfully."
+        )
+
+
+# ------------------------------------------------------------
+# DISPLAY AUDIT RECORD
+# ------------------------------------------------------------
+
+if st.session_state.audit_record is not None:
+
+    st.subheader("📄 Audit Record")
+
+    audit_df = pd.DataFrame(
+        list(st.session_state.audit_record.items()),
+        columns=["Field", "Value"]
     )
 
-    if "audit_record" not in st.session_state:
-        st.session_state.audit_record = None
+    st.dataframe(
+        audit_df,
+        width="stretch",
+        hide_index=True
+    )
 
-
-    if st.button(
-        "📋 Generate Audit Trail Record",
-        width="stretch"
-    ):
-
-        # Make sure prediction has been generated first
-        if "last_prediction" not in st.session_state:
-
-            st.warning(
-                "⚠️ Please click '🔮 Predict Recovery' first."
-            )
-
-        else:
-
-            prediction = st.session_state.last_prediction
-
-            audit_record = {
-                "Transaction Amount": amount,
-                "Payment Method": payment_method,
-                "Merchant Category": merchant_category,
-                "Failure Category": failure_category,
-                "Failure Reason": failure_reason,
-                "Retry Count": retry_count,
-                "Customer Success Rate": customer_success_rate,
-                "Customer Lifetime Value": customer_lifetime_value,
-
-                "Recovery Probability":
-                    prediction["recovery_probability"],
-
-                "Expected Recovery":
-                    prediction["expected_recovery"],
-
-                "Priority":
-                    prediction["priority"],
-
-                "Recommendation":
-                    prediction["recommendation"],
-
-                "Smart Action":
-                    prediction["smart_action"]
-            }
-
-            st.session_state.audit_record = audit_record
-
-            st.success(
-                "✅ Audit trail record generated successfully."
-            )
-
-
-    if st.session_state.audit_record is not None:
-
-        st.subheader("Audit Record")
-
-        audit_df = pd.DataFrame(
-            list(st.session_state.audit_record.items()),
-            columns=["Field", "Value"]
-        )
-
-        st.dataframe(
-            audit_df,
-            width="stretch",
-            hide_index=True
-        )
+    st.caption(
+        "This record captures the inputs, ML prediction, "
+        "recovery estimate and recommended recovery action."
+    )
