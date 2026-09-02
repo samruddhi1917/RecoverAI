@@ -748,7 +748,8 @@ if "expected_recovery" not in st.session_state:
 
 if st.button(
     "🔮 Predict Recovery",
-    width="stretch"
+    width="stretch",
+    type="primary"
 ):
 
     # --------------------------------------------------------
