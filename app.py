@@ -1518,3 +1518,17 @@ if st.session_state.audit_record is not None:
         "This record captures the inputs, ML prediction, "
         "recovery estimate and recommended recovery action."
     )
+
+    # ========================================================
+    # DOWNLOAD AUDIT TRAIL
+    # ========================================================
+
+    audit_csv = audit_df.to_csv(index=False)
+
+    st.download_button(
+        label="📥 Download Audit Trail",
+        data=audit_csv,
+        file_name="recoverai_audit_trail.csv",
+        mime="text/csv",
+        width="stretch"
+    )
