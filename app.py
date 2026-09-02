@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import joblib
-import plotly.express as px
 
 
 # ============================================================
@@ -1411,7 +1410,8 @@ if "audit_record" not in st.session_state:
 
 if st.button(
     "📋 Generate Audit Trail Record",
-    width="stretch"
+    width="stretch",
+    type="secondary"
 ):
 
     # Check whether prediction exists
@@ -1495,3 +1495,17 @@ if st.session_state.audit_record is not None:
         mime="text/csv",
         width="stretch"
     )
+
+# ============================================================
+# FOOTER
+# ============================================================
+
+st.divider()
+
+st.caption(
+    "💳 RecoverAI • AI-powered revenue recovery intelligence"
+)
+
+st.caption(
+    "Predict → Explain → Prioritize → Recover"
+)
