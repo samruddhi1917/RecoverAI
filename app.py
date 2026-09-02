@@ -61,7 +61,7 @@ def load_transactions():
 transactions = load_transactions()
 
 # ============================================================
-# HEADER
+# HERO SECTION
 # ============================================================
 
 st.markdown(
@@ -70,13 +70,16 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="subtitle">AI-Powered Payment Recovery Intelligence</div>',
+    '<div class="subtitle">'
+    'AI-Powered Payment Recovery Intelligence'
+    '</div>',
     unsafe_allow_html=True
 )
 
-st.write(
-    "RecoverAI predicts the probability of recovering a failed payment "
-    "and estimates the expected revenue that can be recovered."
+st.info(
+    "RecoverAI uses machine learning to identify failed payments "
+    "with recovery potential, estimate recoverable revenue, and "
+    "recommend the smartest retry action."
 )
 
 st.divider()
