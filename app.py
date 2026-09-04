@@ -137,205 +137,205 @@ st.dataframe(
 )
 
 
-# ============================================================
-# SIDEBAR
-# ============================================================
+    # ============================================================
+    # SIDEBAR
+    # ============================================================
 
-st.sidebar.header("⚙️ Transaction Details")
+    st.sidebar.header("⚙️ Transaction Details")
 
-amount = st.sidebar.number_input(
-    "Transaction Amount (₹)",
-    min_value=500.01,
-    max_value=99999.99,
-    value=5000.00,
-    step=100.00
-)
-
-payment_method = st.sidebar.selectbox(
-    "Payment Method",
-    ["UPI", "CARD", "NETBANKING", "WALLET"]
-)
-
-merchant_category = st.sidebar.selectbox(
-    "Merchant Category",
-    [
-        "ELECTRONICS",
-        "CLOTHING",
-        "GROCERIES",
-        "FOOD",
-        "TRAVEL",
-        "HOME_APPLIANCES"
-    ]
-)
-
-failure_category = st.sidebar.selectbox(
-    "Failure Category",
-    [
-        "TEMPORARY",
-        "CUSTOMER_ACTION",
-        "PAYMENT_METHOD",
-        "SYSTEM"
-    ]
-)
-
-failure_reason = st.sidebar.selectbox(
-    "Failure Reason",
-    [
-        "NETWORK_TIMEOUT",
-        "GATEWAY_TIMEOUT",
-        "INSUFFICIENT_FUNDS",
-        "AUTHENTICATION_REQUIRED",
-        "EXPIRED_CARD",
-        "INVALID_CARD",
-        "PROCESSING_ERROR",
-        "TEMPORARY_SERVICE_ERROR"
-    ]
-)
-
-retry_count = st.sidebar.number_input(
-    "Retry Count",
-    min_value=0,
-    max_value=10,
-    value=1,
-    step=1
-)
-
-if retry_count > 0:
-
-    last_retry_hours_ago = st.sidebar.number_input(
-        "Hours Since Last Retry",
-        min_value=0.1,
-        max_value=72.0,
-        value=2.0,
-        step=0.1
+    amount = st.sidebar.number_input(
+        "Transaction Amount (₹)",
+        min_value=500.01,
+        max_value=99999.99,
+        value=5000.00,
+        step=100.00
     )
 
-else:
-
-    last_retry_hours_ago = None
-
-
-device_type = st.sidebar.selectbox(
-    "Device Type",
-    ["PHONE", "DESKTOP", "TABLET"]
-)
-
-region = st.sidebar.selectbox(
-    "Region",
-    [
-        "MAHARASHTRA",
-        "KARNATAKA",
-        "DELHI",
-        "TELANGANA",
-        "TAMIL_NADU",
-        "GUJARAT",
-        "WEST_BENGAL",
-        "UTTAR_PRADESH"
-    ]
-)
-
-transaction_hour = st.sidebar.slider(
-    "Transaction Hour",
-    min_value=0,
-    max_value=23,
-    value=12
-)
-
-subscription_active = st.sidebar.selectbox(
-    "Subscription Active?",
-    ["Yes", "No"]
-)
-
-previous_successful_payments = st.sidebar.number_input(
-    "Previous Successful Payments",
-    min_value=0,
-    max_value=100,
-    value=8
-)
-
-previous_failed_payments = st.sidebar.number_input(
-    "Previous Failed Payments",
-    min_value=0,
-    max_value=100,
-    value=1
-)
-
-customer_lifetime_value = st.sidebar.number_input(
-    "Customer Lifetime Value (₹)",
-    min_value=500.01,
-    max_value=100000.00,
-    value=25000.00,
-    step=500.00
-)
-
-
-# ============================================================
-# ENGINEERED FEATURES
-# ============================================================
-
-total_previous_payments = (
-    previous_successful_payments
-    + previous_failed_payments
-)
-
-if total_previous_payments > 0:
-
-    customer_success_rate = (
-        previous_successful_payments
-        / total_previous_payments
+    payment_method = st.sidebar.selectbox(
+        "Payment Method",
+        ["UPI", "CARD", "NETBANKING", "WALLET"]
     )
 
-else:
-
-    customer_success_rate = 0
-
-
-has_been_retried = int(retry_count > 0)
-
-
-if customer_lifetime_value > 0:
-
-    amount_to_lifetime_value_ratio = (
-        amount / customer_lifetime_value
+    merchant_category = st.sidebar.selectbox(
+        "Merchant Category",
+        [
+            "ELECTRONICS",
+            "CLOTHING",
+            "GROCERIES",
+            "FOOD",
+            "TRAVEL",
+            "HOME_APPLIANCES"
+        ]
     )
 
-else:
-
-    amount_to_lifetime_value_ratio = 0
-
-
-has_retry_timestamp = int(retry_count > 0)
-
-
-# ============================================================
-# MAIN DASHBOARD
-# ============================================================
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-
-    st.metric(
-        "Transaction Amount",
-        f"₹{amount:,.2f}"
+    failure_category = st.sidebar.selectbox(
+        "Failure Category",
+        [
+            "TEMPORARY",
+            "CUSTOMER_ACTION",
+            "PAYMENT_METHOD",
+            "SYSTEM"
+        ]
     )
 
-with col2:
-
-    st.metric(
-        "Customer Success Rate",
-        f"{customer_success_rate:.1%}"
+    failure_reason = st.sidebar.selectbox(
+        "Failure Reason",
+        [
+            "NETWORK_TIMEOUT",
+            "GATEWAY_TIMEOUT",
+            "INSUFFICIENT_FUNDS",
+            "AUTHENTICATION_REQUIRED",
+            "EXPIRED_CARD",
+            "INVALID_CARD",
+            "PROCESSING_ERROR",
+            "TEMPORARY_SERVICE_ERROR"
+        ]
     )
 
-with col3:
+    retry_count = st.sidebar.number_input(
+        "Retry Count",
+        min_value=0,
+        max_value=10,
+        value=1,
+        step=1
+    )
 
-    st.metric(
+    if retry_count > 0:
+
+        last_retry_hours_ago = st.sidebar.number_input(
+            "Hours Since Last Retry",
+            min_value=0.1,
+            max_value=72.0,
+            value=2.0,
+            step=0.1
+        )
+
+    else:
+
+        last_retry_hours_ago = None
+
+
+    device_type = st.sidebar.selectbox(
+        "Device Type",
+        ["PHONE", "DESKTOP", "TABLET"]
+    )
+
+    region = st.sidebar.selectbox(
+        "Region",
+        [
+            "MAHARASHTRA",
+            "KARNATAKA",
+            "DELHI",
+            "TELANGANA",
+            "TAMIL_NADU",
+            "GUJARAT",
+            "WEST_BENGAL",
+            "UTTAR_PRADESH"
+        ]
+    )
+
+    transaction_hour = st.sidebar.slider(
+        "Transaction Hour",
+        min_value=0,
+        max_value=23,
+        value=12
+    )
+
+    subscription_active = st.sidebar.selectbox(
+        "Subscription Active?",
+        ["Yes", "No"]
+    )
+
+    previous_successful_payments = st.sidebar.number_input(
+        "Previous Successful Payments",
+        min_value=0,
+        max_value=100,
+        value=8
+    )
+
+    previous_failed_payments = st.sidebar.number_input(
         "Previous Failed Payments",
-        previous_failed_payments
+        min_value=0,
+        max_value=100,
+        value=1
+    )
+
+    customer_lifetime_value = st.sidebar.number_input(
+        "Customer Lifetime Value (₹)",
+        min_value=500.01,
+        max_value=100000.00,
+        value=25000.00,
+        step=500.00
     )
 
 
-st.divider()
+    # ============================================================
+    # ENGINEERED FEATURES
+    # ============================================================
+
+    total_previous_payments = (
+        previous_successful_payments
+        + previous_failed_payments
+    )
+
+    if total_previous_payments > 0:
+
+        customer_success_rate = (
+            previous_successful_payments
+            / total_previous_payments
+        )
+
+    else:
+
+        customer_success_rate = 0
+
+
+    has_been_retried = int(retry_count > 0)
+
+
+    if customer_lifetime_value > 0:
+
+        amount_to_lifetime_value_ratio = (
+            amount / customer_lifetime_value
+        )
+
+    else:
+
+        amount_to_lifetime_value_ratio = 0
+
+
+    has_retry_timestamp = int(retry_count > 0)
+
+
+    # ============================================================
+    # MAIN DASHBOARD
+    # ============================================================
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+
+        st.metric(
+            "Transaction Amount",
+            f"₹{amount:,.2f}"
+        )
+
+    with col2:
+
+        st.metric(
+            "Customer Success Rate",
+            f"{customer_success_rate:.1%}"
+        )
+
+    with col3:
+
+        st.metric(
+            "Previous Failed Payments",
+            previous_failed_payments
+        )
+
+
+    st.divider()
 
 
 # ============================================================
