@@ -952,10 +952,14 @@ if st.button(
         )
 
     # Amount relative to customer value
-    if amount_to_lifetime_value_ratio <= 0.10:
-        reasons.append(
-            "Transaction amount is relatively small compared with customer lifetime value"
-        )
+amount_to_lifetime_value_ratio = (
+    amount / max(customer_lifetime_value, 1)
+)
+
+if amount_to_lifetime_value_ratio <= 0.10:
+    reasons.append(
+        "Transaction amount is relatively small compared with customer lifetime value"
+    )
 
     # Fallback
     if len(reasons) == 0:
