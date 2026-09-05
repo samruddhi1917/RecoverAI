@@ -65,6 +65,51 @@ def load_transactions():
 transactions = load_transactions()
 
 # ============================================================
+# BATCH MODEL SCORING
+# ============================================================
+
+transactions = engineer_features(
+    transactions
+)
+
+# Preserve the CSV's simulated values for transparency.
+# The dashboard itself must use LIVE MODEL predictions.
+transactions["model_recovery_probability"] = 0.0
+transactions["model_expected_recovery"] = 0.0
+
+failed_mask = (
+    transactions["transaction_status"] == "FAILED"
+)
+
+if failed_mask.any():
+
+    failed_features = transactions.loc[
+        failed_mask,
+        MODEL_FEATURES
+    ]
+
+    transactions.loc[
+        failed_mask,
+        "model_recovery_probability"
+    ] = model.predict_proba(
+        failed_features
+    )[:, 1]
+
+    transactions.loc[
+        failed_mask,
+        "model_expected_recovery"
+    ] = (
+        transactions.loc[
+            failed_mask,
+            "amount"
+        ]
+        * transactions.loc[
+            failed_mask,
+            "model_recovery_probability"
+        ]
+    )
+
+# ============================================================
 # HERO SECTION
 # ============================================================
 
