@@ -1104,7 +1104,7 @@ if amount_to_lifetime_value_ratio <= 0.10:
 
     # Total value represented by top opportunities
     top_opportunity_value = top_opportunities[
-        "expected_recovery"
+    "model_expected_recovery"
     ].sum()
 
     st.caption(
