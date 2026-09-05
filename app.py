@@ -439,7 +439,14 @@ total_transactions = len(filtered_transactions)
 total_value = filtered_transactions["amount"].sum()
 
 total_expected_recovery = (
-    filtered_transactions["expected_recovery"].sum()
+    filtered_transactions[
+        "model_expected_recovery"
+    ].sum()
+)
+
+revenue_at_risk = (
+    filtered_transactions["amount"].sum()
+    - total_expected_recovery
 )
 
 revenue_at_risk = (
