@@ -789,8 +789,8 @@ if st.button(
     )
 
 
-    # --------------------------------------------------------
-    # CREATE INPUT DATAFRAME
+        # --------------------------------------------------------
+    # CREATE RAW TRANSACTION
     # --------------------------------------------------------
 
     transaction = pd.DataFrame([{
@@ -824,30 +824,37 @@ if st.button(
             previous_failed_payments,
 
         "customer_lifetime_value":
-            customer_lifetime_value,
-
-        "customer_success_rate":
-            customer_success_rate,
-
-        "has_been_retried":
-            has_been_retried,
-
-        "amount_to_lifetime_value_ratio":
-            amount_to_lifetime_value_ratio,
-
-        "has_retry_timestamp":
-            has_retry_timestamp
-
+            customer_lifetime_value
     }])
+
+
+    # --------------------------------------------------------
+    # SHARED FEATURE ENGINEERING
+    # --------------------------------------------------------
+
+    transaction = engineer_features(
+        transaction
+    )
+
+
+    # --------------------------------------------------------
+    # MODEL FEATURES ONLY
+    # --------------------------------------------------------
+
+    model_input = transaction[
+        MODEL_FEATURES
+    ]
 
 
     # --------------------------------------------------------
     # MODEL PREDICTION
     # --------------------------------------------------------
 
-    recovery_probability = model.predict_proba(
-        transaction
-    )[0][1]
+    recovery_probability = (
+        model.predict_proba(
+            model_input
+        )[0][1]
+    )
 
 
     expected_recovery = (
