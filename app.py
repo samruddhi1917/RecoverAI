@@ -661,7 +661,9 @@ def get_priority(probability):
 
 
 failed_priority_data["priority"] = (
-    failed_priority_data["recovery_probability"]
+    failed_priority_data[
+        "model_recovery_probability"
+    ]
     .apply(get_priority)
 )
 
