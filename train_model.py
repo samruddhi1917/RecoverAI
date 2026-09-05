@@ -1,4 +1,3 @@
-```python
 import pandas as pd
 import joblib
 
@@ -286,4 +285,4 @@ joblib.dump(
 print("\n========================================")
 print("Model saved as recoverai_model.pkl")
 print("========================================")
-```
+
