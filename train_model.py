@@ -1,9 +1,11 @@
-# ============================================================
-# RECOVERAI MODEL TRAINING
-# ============================================================
-
+```python
 import pandas as pd
 import joblib
+
+from feature_engineering import (
+    engineer_features,
+    MODEL_FEATURES
+)
 
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder
@@ -11,20 +13,13 @@ from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.pipeline import Pipeline
-
 from sklearn.metrics import (
     accuracy_score,
     classification_report,
     roc_auc_score,
     confusion_matrix
 )
-
 from sklearn.calibration import calibration_curve
-
-from feature_engineering import (
-    engineer_features,
-    MODEL_FEATURES
-)
 
 
 # ============================================================
@@ -33,11 +28,7 @@ from feature_engineering import (
 
 df = pd.read_csv("recoverai_transactions.csv")
 
-print("\n========================================")
-print("        RECOVERAI MODEL TRAINING")
-print("========================================")
-
-print(f"\nDataset shape: {df.shape}")
+print("Dataset shape:", df.shape)
 
 
 # ============================================================
@@ -46,12 +37,8 @@ print(f"\nDataset shape: {df.shape}")
 
 df = engineer_features(df)
 
-print("\nEngineered features:")
-print(
-    df[
-        ["customer_success_rate"]
-    ].head(10)
-)
+print("\nModel features:")
+print(MODEL_FEATURES)
 
 
 # ============================================================
@@ -62,17 +49,12 @@ failed_df = df[
     df["transaction_status"] == "FAILED"
 ].copy()
 
-print(
-    f"\nTotal transactions: {len(df):,}"
-)
-
-print(
-    f"Failed transactions: {len(failed_df):,}"
-)
+print("\nTotal transactions:", len(df))
+print("Failed transactions:", len(failed_df))
 
 
 # ============================================================
-# FEATURES + TARGET
+# FEATURES AND TARGET
 # ============================================================
 
 X = failed_df[MODEL_FEATURES].copy()
@@ -80,10 +62,8 @@ X = failed_df[MODEL_FEATURES].copy()
 y = failed_df["recovered"]
 
 
-print("\nModel features:")
-for feature in MODEL_FEATURES:
-    print(f"  - {feature}")
-
+print("\nFeatures used for training:")
+print(X.columns.tolist())
 
 print("\nTarget distribution:")
 print(y.value_counts())
@@ -113,18 +93,24 @@ numeric_features = [
 
 preprocessor = ColumnTransformer(
     transformers=[
+
         (
             "categorical",
+
             OneHotEncoder(
                 handle_unknown="ignore"
             ),
+
             categorical_features
         ),
+
         (
             "numeric",
+
             SimpleImputer(
                 strategy="median"
             ),
+
             numeric_features
         )
     ]
@@ -138,14 +124,14 @@ preprocessor = ColumnTransformer(
 X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
-    test_size=0.20,
+    test_size=0.2,
     random_state=42,
     stratify=y
 )
 
 
 # ============================================================
-# RANDOM FOREST
+# MODEL
 # ============================================================
 
 model = RandomForestClassifier(
@@ -157,19 +143,13 @@ model = RandomForestClassifier(
 
 
 # ============================================================
-# COMPLETE PIPELINE
+# PIPELINE
 # ============================================================
 
 pipeline = Pipeline(
     steps=[
-        (
-            "preprocessor",
-            preprocessor
-        ),
-        (
-            "model",
-            model
-        )
+        ("preprocessor", preprocessor),
+        ("model", model)
     ]
 )
 
@@ -187,41 +167,31 @@ print("\nModel training complete!")
 
 
 # ============================================================
-# PREDICTIONS
+# EVALUATION
 # ============================================================
 
 y_pred = pipeline.predict(X_test)
 
-y_probability = (
-    pipeline.predict_proba(X_test)[:, 1]
-)
+y_probability = pipeline.predict_proba(
+    X_test
+)[:, 1]
 
 
-# ============================================================
-# EVALUATION
-# ============================================================
-
-accuracy = accuracy_score(
-    y_test,
-    y_pred
-)
-
-roc_auc = roc_auc_score(
-    y_test,
-    y_probability
-)
-
-
-print("\n========================================")
-print("           MODEL EVALUATION")
-print("========================================")
-
+print("\nAccuracy:")
 print(
-    f"\nAccuracy: {accuracy:.4f}"
+    accuracy_score(
+        y_test,
+        y_pred
+    )
 )
 
+
+print("\nROC-AUC:")
 print(
-    f"ROC-AUC: {roc_auc:.4f}"
+    roc_auc_score(
+        y_test,
+        y_probability
+    )
 )
 
 
@@ -248,6 +218,40 @@ print(cm)
 
 
 # ============================================================
+# FEATURE IMPORTANCE
+# ============================================================
+
+feature_importance = (
+    pipeline
+    .named_steps["model"]
+    .feature_importances_
+)
+
+feature_names = (
+    pipeline
+    .named_steps["preprocessor"]
+    .get_feature_names_out()
+)
+
+importance_df = pd.DataFrame({
+    "feature": feature_names,
+    "importance": feature_importance
+})
+
+importance_df = importance_df.sort_values(
+    by="importance",
+    ascending=False
+)
+
+print("\nTop Important Features:")
+print(
+    importance_df
+    .head(20)
+    .to_string(index=False)
+)
+
+
+# ============================================================
 # CALIBRATION
 # ============================================================
 
@@ -263,36 +267,11 @@ for predicted, actual in zip(
     prob_pred,
     prob_true
 ):
+
     print(
         f"Predicted: {predicted:.2f} | "
         f"Actual recovery rate: {actual:.2f}"
     )
-
-
-# ============================================================
-# SAMPLE PREDICTIONS
-# ============================================================
-
-test_results = X_test.copy()
-
-test_results["actual_recovered"] = (
-    y_test.values
-)
-
-test_results["model_recovery_probability"] = (
-    y_probability
-)
-
-print("\nSample Recovery Predictions:")
-
-print(
-    test_results[
-        [
-            "model_recovery_probability",
-            "actual_recovered"
-        ]
-    ].head(10)
-)
 
 
 # ============================================================
@@ -304,7 +283,7 @@ joblib.dump(
     "recoverai_model.pkl"
 )
 
-
 print("\n========================================")
 print("Model saved as recoverai_model.pkl")
 print("========================================")
+```
