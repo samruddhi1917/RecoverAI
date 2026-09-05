@@ -318,45 +318,6 @@ customer_lifetime_value = st.sidebar.number_input(
     step=500.00
 )
 
-
-# ============================================================
-# ENGINEERED FEATURES
-# ============================================================
-
-total_previous_payments = (
-    previous_successful_payments
-    + previous_failed_payments
-)
-
-if total_previous_payments > 0:
-
-    customer_success_rate = (
-        previous_successful_payments
-        / total_previous_payments
-    )
-
-else:
-
-    customer_success_rate = 0
-
-
-has_been_retried = int(retry_count > 0)
-
-
-if customer_lifetime_value > 0:
-
-    amount_to_lifetime_value_ratio = (
-        amount / customer_lifetime_value
-    )
-
-else:
-
-    amount_to_lifetime_value_ratio = 0
-
-
-has_retry_timestamp = int(retry_count > 0)
-
-
 # ============================================================
 # MAIN DASHBOARD
 # ============================================================
