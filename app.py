@@ -745,21 +745,26 @@ if not failed_data.empty:
         )
     )
 
+        # Rank by expected recovery
     opportunity_data = opportunity_data.sort_values(
-        by="model_expected_recovery",
+        by="expected_recovery",
         ascending=False
     )
 
+    # Show top 10 opportunities
+    top_opportunities = opportunity_data.head(10).copy()
+
+    # Select useful columns
     opportunity_columns = [
-    "transaction_id",
-    "customer_id",
-    "amount",
-    "failure_category",
-    "failure_reason",
-    "model_recovery_probability",
-    "model_expected_recovery",
-    "recovery_priority"
-]
+        "transaction_id",
+        "customer_id",
+        "amount",
+        "failure_category",
+        "failure_reason",
+        "retry_count",
+        "recovery_probability",
+        "expected_recovery"
+    ]
 
     st.dataframe(
         opportunity_data[opportunity_columns].head(10),
