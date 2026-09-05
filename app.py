@@ -745,26 +745,21 @@ if not failed_data.empty:
         )
     )
 
-        # Rank by expected recovery
     opportunity_data = opportunity_data.sort_values(
-        by="expected_recovery",
+        by="model_expected_recovery",
         ascending=False
     )
 
-    # Show top 10 opportunities
-    top_opportunities = opportunity_data.head(10).copy()
-
-    # Select useful columns
     opportunity_columns = [
-        "transaction_id",
-        "customer_id",
-        "amount",
-        "failure_category",
-        "failure_reason",
-        "retry_count",
-        "recovery_probability",
-        "expected_recovery"
-    ]
+    "transaction_id",
+    "customer_id",
+    "amount",
+    "failure_category",
+    "failure_reason",
+    "model_recovery_probability",
+    "model_expected_recovery",
+    "recovery_priority"
+]
 
     st.dataframe(
         opportunity_data[opportunity_columns].head(10),
@@ -1080,9 +1075,9 @@ if amount_to_lifetime_value_ratio <= 0.10:
         transactions["transaction_status"] == "FAILED"
     ].copy()
 
-    # Rank by expected recovery
+        # Rank by LIVE model expected recovery
     opportunity_data = opportunity_data.sort_values(
-        by="expected_recovery",
+        by="model_expected_recovery",
         ascending=False
     )
 
@@ -1097,8 +1092,8 @@ if amount_to_lifetime_value_ratio <= 0.10:
         "failure_category",
         "failure_reason",
         "retry_count",
-        "recovery_probability",
-        "expected_recovery"
+        "model_recovery_probability",
+        "model_expected_recovery"
     ]
 
     st.dataframe(
