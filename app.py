@@ -500,9 +500,9 @@ display_columns = [
     "failure_category",
     "failure_reason",
     "retry_count",
-    "recovery_probability",
+    "model_recovery_probability",
     "recovered",
-    "expected_recovery"
+    "model_expected_recovery"
 ]
 
 st.dataframe(
