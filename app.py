@@ -864,11 +864,15 @@ if st.button(
     # MODEL PREDICTION
     # --------------------------------------------------------
 
-    recovery_probability = (
-        model.predict_proba(
-            model_input
-        )[0][1]
-    )
+    # Apply shared feature engineering
+    transaction = engineer_features(transaction)
+
+    # Keep ONLY the 7 features used by the trained model
+    model_input = transaction[MODEL_FEATURES]
+
+    recovery_probability = model.predict_proba(
+        model_input
+    )[0][1]
 
 
     expected_recovery = (
