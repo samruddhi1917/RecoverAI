@@ -537,19 +537,26 @@ failed_data = transactions[
 # RECOVERY METRICS
 # ------------------------------------------------------------
 
-failed_value = failed_data["amount"].sum()
+failed_value = (
+    failed_data["amount"].sum()
+)
 
-potential_recovery = failed_data["expected_recovery"].sum()
+potential_recovery = (
+    failed_data[
+        "model_expected_recovery"
+    ].sum()
+)
 
-revenue_at_risk = failed_value - potential_recovery
+revenue_at_risk = (
+    failed_value - potential_recovery
+)
 
 if failed_value > 0:
-
-    recovery_rate = potential_recovery / failed_value
-
+    recovery_rate = (
+        potential_recovery / failed_value
+    )
 else:
-
-    recovery_rate = 0
+    recovery_rate = 0.0
 
 
 # ------------------------------------------------------------
