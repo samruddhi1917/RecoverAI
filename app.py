@@ -319,6 +319,20 @@ customer_lifetime_value = st.sidebar.number_input(
 )
 
 # ============================================================
+# DERIVED CUSTOMER FEATURES
+# ============================================================
+
+total_previous_payments = (
+    previous_successful_payments
+    + previous_failed_payments
+)
+
+customer_success_rate = (
+    previous_successful_payments
+    / max(total_previous_payments, 1)
+)
+
+# ============================================================
 # MAIN DASHBOARD
 # ============================================================
 
